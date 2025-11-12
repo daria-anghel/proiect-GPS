@@ -1,0 +1,27 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    text-align: center;
+}
+
+#map {
+    height: 90vh;
+    width: 100%;
+}
+
+#controls {
+    margin: 10px;
+}
+
+button {
+    padding: 6px 12px;
+    background-color: royalblue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: dodgerblue;
+}

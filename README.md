@@ -1,2 +1,0 @@
-# proiect-GPS
-proiect ASD 

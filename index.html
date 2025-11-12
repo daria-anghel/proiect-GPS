@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Tracking & Rute</title>
+
+    <!-- Stiluri -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+
+<body>
+
+    <h2>🗺️ Aplicație GPS Tracking & Rute</h2>
+
+    <div id="controls">
+        <input type="text" id="destinatie" placeholder="Introdu locația (ex: Biserica Neagră, Brașov)">
+        <button onclick="cautaRuta()">Caută rută</button>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- Scripturi -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>
