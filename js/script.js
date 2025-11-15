@@ -3,7 +3,7 @@ let userMarker;
 let routeLayer;
 let userCoords;
 
-// 🔹 Inițializare hartă
+//initializare harta
 function initMap() {
     map = L.map('map').setView([45.6579, 25.6012], 13); // Brașov
 
@@ -12,7 +12,7 @@ function initMap() {
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // 🔹 Obține locația utilizatorului
+    // obtine localtia util
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
@@ -27,7 +27,7 @@ function initMap() {
     }
 }
 
-// 🔹 Caută rută spre o destinație
+//cauta ruta
 async function cautaRuta() {
     const destinatie = document.getElementById('destinatie').value;
     if (!destinatie || !userCoords) {
@@ -35,7 +35,7 @@ async function cautaRuta() {
         return;
     }
 
-    // 🔸 Geocodare — text -> coordonate
+    //geocodare text -> destinatie
     const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destinatie)}`;
     const geoResponse = await fetch(geocodeUrl);
     const geoData = await geoResponse.json();
@@ -47,7 +47,7 @@ async function cautaRuta() {
 
     const destCoords = [parseFloat(geoData[0].lat), parseFloat(geoData[0].lon)];
 
-    // 🔸 Solicită ruta de la OpenRouteService
+    // solicitare sursa 
     const apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjVlNTNhMjUxYWE2ODQ0ZTdhY2JiNzhjMTI1ZGVmZWFhIiwiaCI6Im11cm11cjY0In0="; // înlocuiește cu cheia ta!
     const routeUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${userCoords[1]},${userCoords[0]}&end=${destCoords[1]},${destCoords[0]}`;
 
