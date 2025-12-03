@@ -178,4 +178,11 @@ async function cautaRuta() {
     map.fitBounds(routeLayer.getBounds());
 }
 
+document.getElementById("destinatie").addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault();   // evită refresh sau submit implicit
+        cautaRuta();              // apelează funcția exact ca butonul
+    }
+});
+
 initMap();
