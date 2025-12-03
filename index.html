@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPS Tracking & Rute</title>
 
-    
+
     <link rel="stylesheet" href="css/style.css">
 
 
@@ -16,21 +16,25 @@
 <body>
 
     <div id="sidebar">
-    <h3>Istoric rute</h3>
-    <select id="istoric-dropdown" class="istoric-dropdown">
-        <option disabled selected>-- Selectează ruta --</option>
-    </select>
-    <button id="btn-delete" class="btn-delete">Șterge istoric</button>
-</div>
+        <h3>Istoric rute</h3>
+        <select id="istoric-dropdown" class="istoric-dropdown">
+            <option disabled selected>-- Selectează ruta --</option>
+        </select>
+        <button id="btn-delete" class="btn-delete">Șterge istoric</button>
+    </div>
 
 
     <h2>Aplicație GPS Tracking & Route</h2>
 
     <div id="controls">
         <input type="text" id="destinatie" placeholder="Introdu locația (ex: Biserica Neagră, Brașov)">
+        <select id="modDeplasare" class="istoric-dropdown" style="width:180px;">
+            <option value="driving-car"> Cu mașina</option>
+            <option value="foot-walking"> Pe jos</option>
+        </select>
         <button onclick="cautaRuta()">Caută rută</button>
     </div>
-    
+
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>

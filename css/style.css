@@ -1,9 +1,9 @@
 body {
-    font-family:'Montserrat', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     margin: 0;
     text-align: center;
     background-color: #0d0d0d;
-    color: #d9ffd9; 
+    color: #d9ffd9;
 }
 
 #map {
@@ -23,30 +23,30 @@ input[type="text"] {
     color: #d0eed0;
     outline: none;
     box-shadow: 0 0 10px #39ff14;
-    font-family:'Montserrat', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 
 input[type="text"]::placeholder {
     color: #8cff8c;
-    font-family:'Montserrat', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 
 button {
     padding: 8px 16px;
-    background-color: #39ff14;
+    background-color: #093b01;
     color: #0d0d0d;
     font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     margin-left: 5px;
-    box-shadow: 0 0 12px #39ff14;
+    box-shadow: 0 0 12px #093d00;
     transition: 0.2s ease;
 }
 
 button:hover {
-    box-shadow: 0 0 18px #66ff66;
-    background-color: #66ff66;
+    box-shadow: 0 0 18px #003d00;
+    background-color: #004f00;
 }
 
 /* Sidebar mic în stânga jos */
@@ -56,12 +56,12 @@ button:hover {
     bottom: 20px;
     width: 240px;
     max-height: 220px;
-    background-color:  #000; 
-    color: #d4edda; 
+    background-color: #000;
+    color: #d4edda;
     padding: 15px;
     border-radius: 10px;
     overflow-y: auto;
-    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     z-index: 9999;
 }
 
@@ -69,7 +69,7 @@ button:hover {
     margin-top: 0;
     margin-bottom: 10px;
     font-size: 18px;
-    font-family:'Montserrat', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     text-align: center;
     color: #d4edda;
 }
@@ -80,10 +80,12 @@ button:hover {
     margin-bottom: 10px;
     border-radius: 6px;
     border: 1px solid #28a745;
-    background-color: #d4edda; /* verde deschis */
-    color: #000; /* text negru */
+    background-color: #d4edda;
+    /* verde deschis */
+    color: #000;
+    /* text negru */
     font-weight: 600;
-    font-family:'Montserrat', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .btn-delete {
@@ -99,4 +101,15 @@ button:hover {
 
 .btn-delete:hover {
     background-color: #218838;
+}
+
+#modDeplasare {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    background-color: #000;
+    color: #d0eed0;
+    box-shadow: 0 0 10px #137b00;
+    font-family: 'Montserrat', sans-serif;
+    margin-left: 5px;
 }
