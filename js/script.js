@@ -185,4 +185,4 @@ document.getElementById("destinatie").addEventListener("keydown", function (even
     }
 });
 
-initMap();
+initMap();.
