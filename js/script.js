@@ -176,6 +176,11 @@ async function cautaRuta() {
 
     //ajustare vizualizare harta
     map.fitBounds(routeLayer.getBounds());
+
+    // delete marker of previous destination
+    if (userMarker) {
+        map.removeLayer(userMarker);
+    }
 }
 
 document.getElementById("destinatie").addEventListener("keydown", function (event) {
