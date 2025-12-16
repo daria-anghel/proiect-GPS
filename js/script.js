@@ -92,14 +92,6 @@ async function cautaRuta() {
         }
     }
 
-    document.getElementById('btn-delete').addEventListener('click', () => {
-        const dropdown = document.getElementById('istoric-dropdown');
-        // păstrează doar primul element (placeholder)
-        while (dropdown.options.length > 1) {
-            dropdown.remove(1);
-        }
-    });
-
 
     // geocodare text -> destinatie (Nominatim)
     const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destinatie)}`;
@@ -170,8 +162,22 @@ async function cautaRuta() {
         map.removeLayer(routeLayer);
     }
 
-    //adaugare ruta noua
-    routeLayer = L.polyline(coords, { color: '#11ff00ff', weight: 5, opacity: 0.8 }).addTo(map);
+    // stil rută în funcție de modul de deplasare
+    const routeStyle = {
+        color: '#0066ff',
+        weight: 5,
+        opacity: 1
+    };
+
+    // linie discontinua pentru mers pe jos
+    if (mod === 'foot-walking') {
+        routeStyle.weight = 4;
+        routeStyle.opacity = 0.75;
+        routeStyle.dashArray = '6, 10';
+    }
+
+    // adaugare ruta noua
+    routeLayer = L.polyline(coords, routeStyle).addTo(map);
 
     // ștergere marker destinație anterior
     if (destinationMarker) {
@@ -214,12 +220,20 @@ document.getElementById('istoric-dropdown').addEventListener('change', function 
         map.removeLayer(destinationMarker);
     }
 
-    // redesenare rută
-    routeLayer = L.polyline(route.coords, {
-        color: '#11ff00ff',
+    const mod = document.getElementById('modDeplasare').value;
+
+    const routeStyle = {
+        color: '#0066ff',
         weight: 5,
-        opacity: 0.8
-    }).addTo(map);
+        opacity: 1
+    };
+
+    if (mod === 'foot-walking') {
+        routeStyle.dashArray = '8, 10';
+    }
+
+    // redesenare rută din istoric
+    routeLayer = L.polyline(route.coords, routeStyle).addTo(map);
 
     // marker destinație
     destinationMarker = L.marker(route.destCoords, { icon: blueIcon })
@@ -230,3 +244,10 @@ document.getElementById('istoric-dropdown').addEventListener('change', function 
 });
 
 initMap();
+
+document.getElementById('btn-delete').addEventListener('click', () => {
+    const dropdown = document.getElementById('istoric-dropdown');
+    while (dropdown.options.length > 1) {
+        dropdown.remove(1);
+    }
+})
