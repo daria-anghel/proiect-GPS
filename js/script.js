@@ -2,6 +2,7 @@ let map;
 let userMarker;
 let routeLayer;
 let userCoords;
+let destinationMarker;
 
 // icon marker verde închis
 const greenIcon = L.icon({
@@ -166,21 +167,22 @@ async function cautaRuta() {
     }
 
     //adaugare ruta noua
-    routeLayer = L.polyline(coords, { color: '#39ff14', weight: 5, opacity: 0.8 }).addTo(map);
+    routeLayer = L.polyline(coords, { color: '#11ff00ff', weight: 5, opacity: 0.8 }).addTo(map);
 
-    //adaugare marker destinatie
-    L.marker(destCoords, { icon: blueIcon })
+    // ștergere marker destinație anterior
+    if (destinationMarker) {
+        map.removeLayer(destinationMarker);
+    }
+
+    // adăugare marker destinație nou
+    destinationMarker = L.marker(destCoords, { icon: blueIcon })
         .addTo(map)
-        .bindPopup(`<b> ${destinatie}</b>`)
+        .bindPopup(`<b>${destinatie}</b>`)
         .openPopup();
-
     //ajustare vizualizare harta
     map.fitBounds(routeLayer.getBounds());
 
     // delete marker of previous destination
-    if (userMarker) {
-        map.removeLayer(userMarker);
-    }
 }
 
 document.getElementById("destinatie").addEventListener("keydown", function (event) {
