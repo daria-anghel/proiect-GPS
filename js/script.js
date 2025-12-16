@@ -3,6 +3,7 @@ let userMarker;
 let routeLayer;
 let userCoords;
 let destinationMarker;
+const routesHistory = {};
 
 // icon marker verde închis
 const greenIcon = L.icon({
@@ -160,7 +161,10 @@ async function cautaRuta() {
 
     //convertire coordonate pentru Leaflet
     const coords = routeData.features[0].geometry.coordinates.map(c => [c[1], c[0]]);
-
+    routesHistory[destinatie] = {
+        coords: coords,
+        destCoords: destCoords
+    };
     //eliminare ruta veche daca exista
     if (routeLayer) {
         map.removeLayer(routeLayer);
@@ -190,6 +194,39 @@ document.getElementById("destinatie").addEventListener("keydown", function (even
         event.preventDefault();   // evită refresh sau submit implicit
         cautaRuta();              // apelează funcția exact ca butonul
     }
+});
+
+document.getElementById('istoric-dropdown').addEventListener('change', function () {
+    const selected = this.value;
+    const route = routesHistory[selected];
+
+    if (!route) {
+        return;
+    }
+
+    // ștergere rută veche
+    if (routeLayer) {
+        map.removeLayer(routeLayer);
+    }
+
+    // ștergere marker destinație vechi
+    if (destinationMarker) {
+        map.removeLayer(destinationMarker);
+    }
+
+    // redesenare rută
+    routeLayer = L.polyline(route.coords, {
+        color: '#11ff00ff',
+        weight: 5,
+        opacity: 0.8
+    }).addTo(map);
+
+    // marker destinație
+    destinationMarker = L.marker(route.destCoords, { icon: blueIcon })
+        .addTo(map)
+        .bindPopup(`<b>${selected}</b>`);
+
+    map.fitBounds(routeLayer.getBounds());
 });
 
 initMap();
