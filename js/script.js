@@ -5,6 +5,35 @@ let userCoords;
 let destinationMarker;
 const routesHistory = {};
 
+// funcție pentru animarea rutei
+function animateRoute(coords, routeStyle) {
+    let index = 0;
+
+    if (routeLayer) {
+        map.removeLayer(routeLayer);
+    }
+
+    routeLayer = L.polyline([], routeStyle).addTo(map);
+
+    const totalDuration = 3000; // 3 secunde vizibile
+    const steps = 100;          // câți pași vizuali
+    const pointsPerStep = Math.ceil(coords.length / steps);
+    const stepTime = totalDuration / steps;
+
+    function drawStep() {
+        if (index >= coords.length) {
+            return;
+        }
+
+        const nextIndex = Math.min(index + pointsPerStep, coords.length);
+        routeLayer.setLatLngs(coords.slice(0, nextIndex));
+        index = nextIndex;
+
+        setTimeout(drawStep, stepTime);
+    }
+
+    drawStep();
+}
 // icon marker verde închis
 const greenIcon = L.icon({
     iconUrl: 'https://unpkg.com/leaflet-color-markers/img/marker-icon-2x-darkgreen.png',
@@ -191,7 +220,10 @@ async function cautaRuta() {
         .openPopup();
     //ajustare vizualizare harta
     map.fitBounds(routeLayer.getBounds());
-
+    if (statusMsg) {
+        statusMsg.textContent = 'Rută generată';
+        setTimeout(() => statusMsg.classList.remove('active'), 1200);
+    }
     // delete marker of previous destination
 }
 
@@ -233,7 +265,7 @@ document.getElementById('istoric-dropdown').addEventListener('change', function 
     }
 
     // redesenare rută din istoric
-    routeLayer = L.polyline(route.coords, routeStyle).addTo(map);
+    animateRoute(route.coords, routeStyle);
 
     // marker destinație
     destinationMarker = L.marker(route.destCoords, { icon: blueIcon })
