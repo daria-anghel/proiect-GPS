@@ -3,6 +3,7 @@ let userMarker;
 let routeLayer;
 let userCoords;
 let destinationMarker;
+let routeInfoLabel;
 const routesHistory = {};
 
 // funcție pentru animarea rutei
@@ -182,6 +183,11 @@ async function cautaRuta() {
 
     //convertire coordonate pentru Leaflet
     const coords = routeData.features[0].geometry.coordinates.map(c => [c[1], c[0]]);
+    const midIndex = Math.floor(coords.length / 2);
+    const midPoint = coords[midIndex];
+    const summary = routeData.features[0].properties.summary;
+    const distanceKm = (summary.distance / 1000).toFixed(1);
+    const durationMin = Math.round(summary.duration / 60);
     routesHistory[destinatie] = {
         coords: coords,
         destCoords: destCoords
@@ -189,6 +195,11 @@ async function cautaRuta() {
     //eliminare ruta veche daca exista
     if (routeLayer) {
         map.removeLayer(routeLayer);
+    }
+    // eliminare eticheta veche (dacă există)
+    if (routeInfoLabel) {
+        map.removeLayer(routeInfoLabel);
+        routeInfoLabel = null;
     }
 
     // stil rută în funcție de modul de deplasare
@@ -207,6 +218,20 @@ async function cautaRuta() {
 
     // adaugare ruta noua
     routeLayer = L.polyline(coords, routeStyle).addTo(map);
+    const iconSymbol = mod === 'foot-walking' ? '🚶' : '🚗';
+
+    routeInfoLabel = L.marker(midPoint, {
+        icon: L.divIcon({
+            className: 'route-info-wrapper',
+            html: `
+            <div class="route-label">
+                ${iconSymbol} ${durationMin} min • ${distanceKm} km
+            </div>
+        `,
+            iconSize: null
+        }),
+        interactive: false
+    }).addTo(map);
 
     // ștergere marker destinație anterior
     if (destinationMarker) {
