@@ -16,7 +16,7 @@ function animateRoute(coords, routeStyle) {
 
     routeLayer = L.polyline([], routeStyle).addTo(map);
 
-    const totalDuration = 3000; // 3 secunde vizibile
+    const totalDuration = 1000; // 1 secunda vizibila
     const steps = 100;          // câți pași vizuali
     const pointsPerStep = Math.ceil(coords.length / steps);
     const stepTime = totalDuration / steps;
@@ -73,7 +73,6 @@ function formatDuration(seconds) {
 // inițializare hartă
 function initMap() {
 
-        zoomSnap: 0.45,
     map = L.map('map').setView([45.6579, 25.6012], 13); //bv
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -234,7 +233,7 @@ async function cautaRuta() {
     }
 
     // adaugare ruta noua
-    routeLayer = L.polyline(coords, routeStyle).addTo(map);
+    animateRoute(coords, routeStyle);
     const iconSymbol = mod === 'foot-walking' ? '🚶' : '🚗';
 
     // formatare durata
@@ -262,7 +261,12 @@ async function cautaRuta() {
         .bindPopup(`<b>${destinatie}</b>`)
         .openPopup();
     //ajustare vizualizare harta
-    map.fitBounds(routeLayer.getBounds());
+    const bounds = L.latLngBounds(coords);
+    map.fitBounds(bounds, {
+        padding: [40, 40],
+        maxZoom: 17
+    });
+
     if (statusMsg) {
         statusMsg.textContent = 'Rută generată';
         setTimeout(() => statusMsg.classList.remove('active'), 1200);
@@ -284,7 +288,7 @@ document.getElementById('istoric-dropdown').addEventListener('change', function 
     if (!route) {
         return;
     }
-
+    document.getElementById('destinatie').value = selected;
     // ștergere rută veche
     if (routeLayer) {
         map.removeLayer(routeLayer);
@@ -315,7 +319,12 @@ document.getElementById('istoric-dropdown').addEventListener('change', function 
         .addTo(map)
         .bindPopup(`<b>${selected}</b>`);
 
-    map.fitBounds(routeLayer.getBounds());
+    const bounds = L.latLngBounds(route.coords);
+
+    map.fitBounds(bounds, {
+        padding: [40, 40],
+        maxZoom: 17
+    });
 });
 
 initMap();
