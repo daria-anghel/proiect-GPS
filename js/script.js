@@ -54,6 +54,22 @@ const blueIcon = L.icon({
     shadowSize: [41, 41]
 });
 
+// funcție pentru formatarea duratei
+function formatDuration(seconds) {
+    const totalMinutes = Math.round(seconds / 60);
+
+    if (totalMinutes < 60) {
+        return `${totalMinutes} min`;
+    }
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    return minutes === 0
+        ? `${hours} h`
+        : `${hours} h ${minutes} min`;
+}
+
 // inițializare hartă
 function initMap() {
 
@@ -187,7 +203,7 @@ async function cautaRuta() {
     const midPoint = coords[midIndex];
     const summary = routeData.features[0].properties.summary;
     const distanceKm = (summary.distance / 1000).toFixed(1);
-    const durationMin = Math.round(summary.duration / 60);
+    const formattedDuration = formatDuration(summary.duration);
     routesHistory[destinatie] = {
         coords: coords,
         destCoords: destCoords
@@ -220,12 +236,13 @@ async function cautaRuta() {
     routeLayer = L.polyline(coords, routeStyle).addTo(map);
     const iconSymbol = mod === 'foot-walking' ? '🚶' : '🚗';
 
+    // formatare durata
     routeInfoLabel = L.marker(midPoint, {
         icon: L.divIcon({
             className: 'route-info-wrapper',
             html: `
             <div class="route-label">
-                ${iconSymbol} ${durationMin} min • ${distanceKm} km
+                ${iconSymbol} ${formattedDuration} • ${distanceKm} km
             </div>
         `,
             iconSize: null
