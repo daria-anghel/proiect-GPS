@@ -73,13 +73,8 @@ function formatDuration(seconds) {
 // inițializare hartă
 function initMap() {
 
-    map = L.map('map', {
         zoomSnap: 0.45,
-        zoomDelta: 0.5,
-        wheelPxPerZoomLevel: 60,
-        smoothWheelZoom: true,
-        smoothSensitivity: 1.3
-    }).setView([45.6579, 25.6012], 13); //bv
+    map = L.map('map').setView([45.6579, 25.6012], 13); //bv
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
