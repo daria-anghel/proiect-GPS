@@ -166,3 +166,36 @@ button:hover {
     border: none !important;
     box-shadow: none !important;
 }
+
+/* Cardul de detalii din dreapta jos */
+.route-details-card {
+    position: absolute;
+    right: 20px;
+    bottom: 30px; /* Puțin deasupra marginii pentru a nu acoperi copyright-ul hărții */
+    width: 220px;
+    background-color: rgba(0, 0, 0, 0.85); /* Dark mode elegant */
+    color: #d9ffd9;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #285232;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    font-size: 14px;
+    pointer-events: auto;
+}
+
+.card-header {
+    font-weight: bold;
+    border-bottom: 1px solid #285232;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    color: #8cff8c;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+#card-content b {
+    font-size: 16px;
+    display: block;
+    margin-bottom: 5px;
+}
