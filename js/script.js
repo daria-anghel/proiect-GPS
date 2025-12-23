@@ -21,7 +21,17 @@ function initMap() {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 userCoords = [pos.coords.latitude, pos.coords.longitude];
-                userMarker = L.marker(userCoords).addTo(map).bindPopup("Ești aici!").openPopup();
+                // Creăm iconița personalizată (cercul albastru)
+                const blueDotIcon = L.divIcon({
+                    className: 'user-location-icon',
+                    iconSize: [16, 16], // Mărimea cercului
+                    iconAnchor: [8, 8]  // Centrarea punctului
+                });
+
+                // Adăugăm markerul cu noua iconiță
+                userMarker = L.marker(userCoords, { icon: blueDotIcon }).addTo(map);
+        
+                userMarker.bindPopup("Ești aici!").openPopup();
                 map.setView(userCoords, 14);
             },
             () => console.error("Eroare la obținerea locației.")
