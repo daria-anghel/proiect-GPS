@@ -65,7 +65,31 @@ function initMap() {
         const minutes = totalMinutes % 60;
         return minutes === 0 ? `${hours} h` : `${hours} h ${minutes} min`;
     }
+    // Centru Brașov (aprox.)
+    const BRASOV_CENTER = [45.6579, 25.6012];
 
+    // Raza în km în care considerăm "perimetrul Brașovului"
+    const BRASOV_RADIUS_KM = 15;
+
+    // Haversine (distanță în km între 2 coordonate [lat, lon])
+    function distanceKm(a, b) {
+        const R = 6371;
+        const dLat = (b[0] - a[0]) * Math.PI / 180;
+        const dLon = (b[1] - a[1]) * Math.PI / 180;
+
+        const lat1 = a[0] * Math.PI / 180;
+        const lat2 = b[0] * Math.PI / 180;
+
+        const sinDLat = Math.sin(dLat / 2);
+        const sinDLon = Math.sin(dLon / 2);
+
+        const h = sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLon * sinDLon;
+        return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+    }
+
+    function isInBrasovArea(coords) {
+        return distanceKm(coords, BRASOV_CENTER) <= BRASOV_RADIUS_KM;
+    }
     // 4. Funcția principală de calcul rută
     async function cautaRuta() {
         if (!map || !userCoords) {
@@ -89,7 +113,7 @@ function initMap() {
 
         // OpenRouteService API
         const apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjVlNTNhMjUxYWE2ODQ0ZTdhY2JiNzhjMTI1ZGVmZWFhIiwiaCI6Im11cm11cjY0In0=";
-        const routeUrl = `https://api.openrouteservice.org/v2/directions/${mod}?api_key=${apiKey}&start=${userCoords[1]},${userCoords[0]}&end=${destCoords[1]},${destCoords[0]}`;
+        const routeUrl = `https://api.openrouteservice.org/v2/directions/${mod}?api_key=${apiKey}&start=${userCoords[1]},${userCoords[0]}&end=${destCoords[1]},${destCoords[0]}&preference=fastest`;
 
         const routeRes = await fetch(routeUrl);
         const routeData = await routeRes.json();
@@ -109,13 +133,20 @@ function initMap() {
             }
             const oraH = dataPlecare.getHours();
 
-            // --- LOGICA TRAFIC BAZATĂ PE ORA ALEASĂ ---
-            let factorTrafic = 1.1; // Trafic normal
-            if ((oraH >= 7 && oraH < 9) || (oraH >= 12 && oraH < 15) || (oraH >= 18 && oraH < 20)) {
-                factorTrafic = 1.5; // Trafic mare
-            } else if (oraH >= 0 && oraH < 7) {
-                factorTrafic = 0.8; // Trafic liber (noapte)
+            // --- LOGICA TRAFIC (doar în perimetrul Brașovului) ---
+            const traficInBrasov = (isInBrasovArea(userCoords) || isInBrasovArea(destCoords));
+
+            let factorTrafic = 1.0; // implicit: fără trafic
+
+            if (traficInBrasov) {
+                factorTrafic = 1.05; // normal (ușor)
+                if ((oraH >= 7 && oraH < 9) || (oraH >= 16 && oraH < 19)) {
+                    factorTrafic = 1.20; // aglomerat (moderat, realist)
+                } else if (oraH >= 0 && oraH < 6) {
+                    factorTrafic = 0.95; // noaptea (ușor mai rapid)
+                }
             }
+
 
             const durataCalculataS = summary.duration * factorTrafic;
             const formattedDuration = formatDuration(durataCalculataS);
