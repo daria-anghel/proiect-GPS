@@ -209,6 +209,21 @@ function initMap() {
         }
     });
 
+    // cautare la click pe buton
+    const btnSearch = document.getElementById('btn-search');
+    if (btnSearch) {
+        btnSearch.addEventListener('click', () => {
+            cautaRuta();
+        });
+
+        // opțional: să meargă și din tastatură (Enter / Space)
+        btnSearch.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                cautaRuta();
+            }
+        });
+    }
 
     // stergere istoric
     document.getElementById('btn-delete').addEventListener('click', () => {
@@ -218,7 +233,32 @@ function initMap() {
         document.getElementById('route-details-card').style.display = 'none';
     });
 }
+// Eveniment schimbare istoric
+const istoricDropdown = document.getElementById('istoric-dropdown');
+const destinatieInput = document.getElementById('destinatie');
 
+function aplicaRutaDinIstoric() {
+    if (!istoricDropdown || !destinatieInput) {
+        return;
+    }
+
+    const selected = istoricDropdown.value;
+    if (!selected || selected.startsWith('--')) {
+        return;
+    }
+
+    destinatieInput.value = selected;
+    destinatieInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    setTimeout(() => {
+        istoricDropdown.blur();   // opțional; îl poți scoate dacă vrei
+        cautaRuta();
+    }, 80);
+}
+
+if (istoricDropdown) {
+    istoricDropdown.addEventListener('change', aplicaRutaDinIstoric);
+}
 
 // Pornire aplicație
 initMap();
