@@ -13,7 +13,8 @@ body {
 
 #search-container {
     position: absolute;
-    top: 75px; /* 60px header + 15px spațiu */
+    top: 75px;
+    /* 60px header + 15px spațiu */
     left: 20px;
     z-index: 1000;
     width: 392px;
@@ -29,10 +30,10 @@ body {
     display: flex;
     align-items: center;
     padding: 0 16px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-.search-icon svg{
+.search-icon svg {
     width: 20px;
     height: 20px;
     fill: #70757a;
@@ -145,17 +146,22 @@ button:hover {
 }
 
 #modDeplasare {
-    background-color: white; /* Fundal alb */
+    background-color: white;
+    /* Fundal alb */
     border: 1px solid #dadce0;
-    border-radius: 20px; /* Rotunjit la fel ca butonul Acum */
+    border-radius: 20px;
+    /* Rotunjit la fel ca butonul Acum */
     padding: 8px 16px;
     font-size: 14px;
-    color: #3c4043; /* Text închis la culoare */
+    color: #3c4043;
+    /* Text închis la culoare */
     cursor: pointer;
-    font-family: 'Montserrat', sans-serif; /* Același font */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-family: 'Montserrat', sans-serif;
+    /* Același font */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     outline: none;
-    appearance: none; /* Scoate săgeata default a browserului pentru un aspect mai curat */
+    appearance: none;
+    /* Scoate săgeata default a browserului pentru un aspect mai curat */
     -webkit-appearance: none;
     transition: all 0.2s ease;
 }
@@ -227,9 +233,11 @@ button:hover {
 .route-details-card {
     position: absolute;
     right: 20px;
-    bottom: 30px; /* Puțin deasupra marginii pentru a nu acoperi copyright-ul hărții */
+    bottom: 30px;
+    /* Puțin deasupra marginii pentru a nu acoperi copyright-ul hărții */
     width: 220px;
-    background-color: rgba(0, 0, 0, 0.85); /* Dark mode*/
+    background-color: rgba(0, 0, 0, 0.85);
+    /* Dark mode*/
     color: #d9ffd9;
     padding: 15px;
     border-radius: 12px;
@@ -279,13 +287,21 @@ button:hover {
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(2.5); opacity: 0; }
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
 }
 
 #search-container {
     position: absolute;
-    top: 70px; /* 75px header + 15px spațiu */
+    top: 70px;
+    /* 75px header + 15px spațiu */
     left: 10px;
     z-index: 1000;
     width: 400px;
@@ -301,12 +317,12 @@ button:hover {
     display: flex;
     align-items: center;
     padding: 0 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 -1px 0px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
     transition: box-shadow 0.2s;
 }
 
 .search-box:focus-within {
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 
@@ -319,13 +335,18 @@ button:hover {
     font-family: 'Montserrat', sans-serif;
     color: #000000;
     background: transparent;
-    box-shadow: none !important; /* Scoatem umbra veche verde */
+    box-shadow: none !important;
+    /* Scoatem umbra veche verde */
 }
+
 #destinatie::placeholder {
-    color: #000000; /* Schimbat în NEGRU */
-    opacity: 0.7;    /* Opțional: puțin transparent pentru a arăta a sugestie */
+    color: #000000;
+    /* Schimbat în NEGRU */
+    opacity: 0.7;
+    /* Opțional: puțin transparent pentru a arăta a sugestie */
     font-family: 'Montserrat', sans-serif;
 }
+
 /* Stil pentru controalele secundare (ora, mod deplasare) */
 .sub-controls {
     display: flex;
@@ -333,7 +354,8 @@ button:hover {
     padding: 0 4px;
 }
 
-.mini-select, .mini-input {
+.mini-select,
+.mini-input {
     background: white;
     border: 1px solid #dadce0;
     border-radius: 16px;
@@ -341,8 +363,9 @@ button:hover {
     font-size: 13px;
     color: #3c4043;
     cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
+
 .btn-now {
     background: white;
     border: 1px solid #dadce0;
@@ -352,11 +375,11 @@ button:hover {
     color: #3c4043;
     cursor: pointer;
     font-family: 'Montserrat', sans-serif;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
-    
+
     /* MODIFICAREA AICI: Elimină bold-ul */
-    font-weight: normal !important; 
+    font-weight: normal !important;
 }
 
 .btn-now:hover {
@@ -367,14 +390,16 @@ button:hover {
 .autocomplete-list {
     background: white;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     margin-top: 5px;
     max-height: 250px;
     overflow-y: auto;
-    display: none; /* Ascuns implicit */
+    display: none;
+    /* Ascuns implicit */
     z-index: 1001;
     text-align: left;
 }
+
 .autocomplete-item {
     padding: 12px 16px;
     cursor: pointer;
@@ -391,28 +416,31 @@ button:hover {
 .autocomplete-item:last-child {
     border-bottom: none;
 }
- 
+
 /*nu se suprapune peste butoanele de zoom */
 .leaflet-top.leaflet-left {
-    margin-top: 200px !important; /* Mută butoanele +/- sub bara de search */
+    margin-top: 200px !important;
+    /* Mută butoanele +/- sub bara de search */
 }
 
 #oraPlecareInput {
     background-color: white;
     border: 1px solid #dadce0;
     border-radius: 20px;
-    
+
     /* Ajustări pentru dimensiune */
-    width: 100px;         /* Lățime fixă mai mică */
-    padding: 6px 10px;    /* Padding redus pe lateral */
-    
+    width: 100px;
+    /* Lățime fixă mai mică */
+    padding: 6px 10px;
+    /* Padding redus pe lateral */
+
     font-size: 14px;
     color: #3c4043;
     cursor: pointer;
     font-family: 'Montserrat', sans-serif;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     outline: none;
-    
+
     /* Aliniere centrală a textului */
     text-align: center;
     display: inline-flex;
@@ -426,7 +454,8 @@ button:hover {
 /* Ajustăm și grupul de control pentru a fi mai strâns */
 .time-picker-group {
     display: flex;
-    gap: 5px; /* Spațiu mai mic între ceas și butonul Acum */
+    gap: 5px;
+    /* Spațiu mai mic între ceas și butonul Acum */
     align-items: center;
 }
 
@@ -439,29 +468,39 @@ button:hover {
 }
 
 /* Definirea efectului de hover universal pentru controale */
-.mini-select, 
-.mini-input, 
+.mini-select,
+.mini-input,
 .btn-now,
 #modDeplasare {
-    transition: all 0.2s ease-in-out; /* Face tranziția lină */
+    transition: all 0.2s ease-in-out;
+    /* Face tranziția lină */
 }
 
 /* Efectul propriu-zis la trecerea mouse-ului (Hover) */
-.mini-select:hover, 
-.mini-input:hover, 
+.mini-select:hover,
+.mini-input:hover,
 .btn-now:hover,
 #modDeplasare:hover {
-    transform: translateY(-2px); /* Ridică elementul cu 2 pixeli */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Face umbra mai pronunțată */
-    border-color: #bcc1c8; /* Schimbă subtil bordura */
-    background-color: #ffffff; /* Se asigură că rămâne alb curat */
+    transform: translateY(-2px);
+    /* Ridică elementul cu 2 pixeli */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    /* Face umbra mai pronunțată */
+    border-color: #bcc1c8;
+    /* Schimbă subtil bordura */
+    background-color: #ffffff;
+    /* Se asigură că rămâne alb curat */
 }
 
 /* Efect de apăsare (Click) pentru feedback tactil */
-.mini-select:active, 
-.mini-input:active, 
+.mini-select:active,
+.mini-input:active,
 .btn-now:active,
 #modDeplasare:active {
-    transform: translateY(0); /* Revine la poziția inițială când apeși */
+    transform: translateY(0);
+    /* Revine la poziția inițială când apeși */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.user-location-icon {
+    position: relative;
 }
