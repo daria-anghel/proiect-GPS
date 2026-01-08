@@ -56,6 +56,42 @@ function initMap() {
 
     setOraCurenta();
 
+    // --- CLICK PE HARTĂ PENTRU DESTINAȚIE ---
+    map.on('click', async function (e) {
+        // 1. Luăm coordonatele unde ai dat click
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+
+        // Punem un marker temporar ca să vezi unde ai apăsat (opțional, dar arată bine)
+        L.popup()
+            .setLatLng(e.latlng)
+            .setContent("Caut adresa...")
+            .openOn(map);
+
+        // Întrebăm serverul ce adresă e acolo (Reverse Geocoding)
+        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data && data.display_name) {
+                // Punem adresa găsită în căsuța de text
+                document.getElementById('destinatie').value = data.display_name;
+
+                // Închidem popup-ul de "Caut adresa..."
+                map.closePopup();
+
+                // Pornim calculul rutei automat
+                cautaRuta();
+            } else {
+                alert("Nu am reușit să găsesc o adresă exactă aici.");
+            }
+        } catch (err) {
+            console.error("Eroare la click:", err);
+        }
+    });
+
 
     // 3. Funcție formatare durată
     function formatDuration(seconds) {
@@ -259,6 +295,7 @@ function aplicaRutaDinIstoric() {
 if (istoricDropdown) {
     istoricDropdown.addEventListener('change', aplicaRutaDinIstoric);
 }
+
 
 // Pornire aplicație
 initMap();

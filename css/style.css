@@ -508,3 +508,9 @@ button:hover {
 .search-icon {
     cursor: pointer;
 }
+
+#map {
+    height: 90vh;
+    width: 100%;
+    cursor: crosshair !important;
+}
