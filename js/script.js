@@ -5,26 +5,18 @@ let userCoords;
 let destinationMarker;
 let routeInfoLabel;
 let geoWatchId = null;
+let selectedPointMarker;
+let selectedPointCoords;
+let selectedPointAddress;
 const routesHistory = {};
 
 // 1. Funcție pentru a seta/reseta ora la momentul curent
 function setOraCurenta() {
     const acum = new Date();
-    const oraFormatata =
-        acum.getHours().toString().padStart(2, '0') + ":" +
+    const oraFormatata = acum.getHours().toString().padStart(2, '0') + ":" +
         acum.getMinutes().toString().padStart(2, '0');
-
     const inputOra = document.getElementById('oraPlecareInput');
-    const destinatieInput = document.getElementById('destinatie');
-
-    if (inputOra) {
-        inputOra.value = oraFormatata;
-    }
-
-    // Dacă există deja o destinație, regenerează ruta
-    if (destinatieInput && destinatieInput.value.trim()) {
-        cautaRuta();
-    }
+    if (inputOra) inputOra.value = oraFormatata;
 }
 
 // 2. Inițializare Hartă
@@ -68,40 +60,111 @@ function initMap() {
     setOraCurenta();
 
     // --- CLICK PE HARTĂ PENTRU DESTINAȚIE ---
-    map.on('click', async function (e) {
-        // 1. Luăm coordonatele unde ai dat click
+    map.on('click', async (e) => {
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
 
-        // Punem un marker temporar ca să vezi unde ai apăsat (opțional, dar arată bine)
-        L.popup()
-            .setLatLng(e.latlng)
-            .setContent("Caut adresa...")
-            .openOn(map);
+        // Curățăm selecția anterioară
+        if (selectedPointMarker) {
+            map.removeLayer(selectedPointMarker);
+            selectedPointMarker = null;
+        }
 
-        // Întrebăm serverul ce adresă e acolo (Reverse Geocoding)
+        selectedPointCoords = [lat, lng];
+        selectedPointAddress = null;
+
+        // Marker imediat
+        selectedPointMarker = L.marker(selectedPointCoords).addTo(map);
+
+        // Popup compact (fără adresă)
+        const popupHtmlCompact = `
+        <div style="text-align:left; min-width:180px;">
+            <div style="font-weight:700; margin-bottom:8px;">Destinație selectată</div>
+            <div id="map-pick-status" style="font-size:12px; color:#666; margin-bottom:10px;">
+                Caut adresa...
+            </div>
+            <button id="btn-directions-from-map" style="
+                width:100%;
+                padding:8px 10px;
+                border:none;
+                border-radius:8px;
+                cursor:pointer;
+                font-weight:700;
+                background:#0066ff;
+                color:white;
+            " disabled>Direcții</button>
+        </div>
+    `;
+
+        selectedPointMarker.bindPopup(popupHtmlCompact, { closeButton: true, maxWidth: 260 }).openPopup();
+
+        // Reverse geocoding (NU afișăm adresa, doar activăm butonul când e gata)
         const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
 
         try {
             const response = await fetch(url);
             const data = await response.json();
 
-            if (data && data.display_name) {
-                // Punem adresa găsită în căsuța de text
-                document.getElementById('destinatie').value = data.display_name;
+            selectedPointAddress =
+                formatShortAddress(data) ||
+                `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 
-                // Închidem popup-ul de "Caut adresa..."
-                map.closePopup();
+            // Actualizăm status + activăm butonul, dar NU afișăm adresa
+            setTimeout(() => {
+                const statusEl = document.getElementById('map-pick-status');
+                const btn = document.getElementById('btn-directions-from-map');
 
-                // Pornim calculul rutei automat
-                cautaRuta();
-            } else {
-                alert("Nu am reușit să găsesc o adresă exactă aici.");
-            }
+                if (statusEl) {
+                    statusEl.textContent = "Adresă identificată.";
+                }
+                if (btn) {
+                    btn.disabled = false;
+                }
+            }, 0);
+
         } catch (err) {
-            console.error("Eroare la click:", err);
+            console.error("Eroare la reverse geocoding:", err);
+            setTimeout(() => {
+                const statusEl = document.getElementById('map-pick-status');
+                const btn = document.getElementById('btn-directions-from-map');
+
+                if (statusEl) {
+                    statusEl.textContent = "Nu am putut identifica adresa. Poți încerca direcții pe coordonate.";
+                }
+                // permitem direcții și fără adresă (fallback pe coordonate)
+                if (btn) {
+                    btn.disabled = false;
+                }
+            }, 0);
         }
+
+        // Handler pentru Direcții (setează destinația ABIA acum)
+        setTimeout(() => {
+            const btn = document.getElementById('btn-directions-from-map');
+            if (!btn) {
+                return;
+            }
+
+            btn.addEventListener('click', async () => {
+                const destinatieInput = document.getElementById('destinatie');
+                if (!destinatieInput) {
+                    return;
+                }
+
+                const valueToSet = selectedPointAddress || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+                destinatieInput.value = valueToSet;
+
+                // Eliminăm markerul “selectat” ca să nu rămână 2 markere apropiate
+                if (selectedPointMarker) {
+                    map.removeLayer(selectedPointMarker);
+                    selectedPointMarker = null;
+                }
+
+                await cautaRuta();
+            }, { once: true });
+        }, 0);
     });
+
 
 
     // 3. Funcție formatare durată
@@ -354,6 +417,48 @@ if (istoricDropdown) {
     istoricDropdown.addEventListener('change', aplicaRutaDinIstoric);
 }
 
+// Funcție pentru formatarea unei adrese scurte din datele Nominatim
+function formatShortAddress(nominatimData) {
+    if (!nominatimData || !nominatimData.address) {
+        return null;
+    }
+
+    const a = nominatimData.address;
+
+    // Prioritate: POI / clădire / instituție
+    const name =
+        nominatimData.name ||
+        a.amenity ||
+        a.building ||
+        a.tourism ||
+        a.shop ||
+        a.office ||
+        a.road;
+
+    const road = a.road || '';
+    const houseNumber = a.house_number ? ` ${a.house_number}` : '';
+    const city =
+        a.city ||
+        a.town ||
+        a.municipality ||
+        a.village ||
+        '';
+
+    // Dacă avem un nume de locație (ex: instituție)
+    if (name && name !== road) {
+        return city ? `${name}, ${city}` : name;
+    }
+
+    // Altfel: stradă + număr + oraș
+    if (road) {
+        return city
+            ? `${road}${houseNumber}, ${city}`
+            : `${road}${houseNumber}`;
+    }
+
+    // Fallback minimal
+    return city || null;
+}
 
 // Pornire aplicație
 initMap();
