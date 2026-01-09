@@ -10,10 +10,21 @@ const routesHistory = {};
 // 1. Funcție pentru a seta/reseta ora la momentul curent
 function setOraCurenta() {
     const acum = new Date();
-    const oraFormatata = acum.getHours().toString().padStart(2, '0') + ":" +
+    const oraFormatata =
+        acum.getHours().toString().padStart(2, '0') + ":" +
         acum.getMinutes().toString().padStart(2, '0');
+
     const inputOra = document.getElementById('oraPlecareInput');
-    if (inputOra) inputOra.value = oraFormatata;
+    const destinatieInput = document.getElementById('destinatie');
+
+    if (inputOra) {
+        inputOra.value = oraFormatata;
+    }
+
+    // Dacă există deja o destinație, regenerează ruta
+    if (destinatieInput && destinatieInput.value.trim()) {
+        cautaRuta();
+    }
 }
 
 // 2. Inițializare Hartă
@@ -198,7 +209,18 @@ function initMap() {
             if (routeInfoLabel) map.removeLayer(routeInfoLabel);
 
             // --- DESENARE RUTĂ ---
-            routeLayer = L.polyline(coords, { color: '#0066ff', weight: 5 }).addTo(map);
+            const routeStyle = {
+                color: '#0066ff',
+                weight: 5
+            };
+
+            // Pe jos: linie punctată
+            if (mod === 'foot-walking') {
+                routeStyle.dashArray = '8 10';   // 8px linie, 10px spațiu (ajustezi după gust)
+                routeStyle.lineCap = 'round';    // arată mai “punctat”/rotunjit
+            }
+
+            routeLayer = L.polyline(coords, routeStyle).addTo(map)
             destinationMarker = L.marker(destCoords).addTo(map).bindPopup(destinatie).openPopup();
 
             // --- AFIȘARE ÎN CARDUL DIN DREAPTA JOS ---
@@ -244,6 +266,42 @@ function initMap() {
             cautaRuta();
         }
     });
+
+    // schimbare mod deplasare fara enter
+    const modDeplasareSelect = document.getElementById('modDeplasare');
+    if (modDeplasareSelect) {
+        modDeplasareSelect.addEventListener('change', () => {
+            const destinatieInput = document.getElementById('destinatie');
+            if (!destinatieInput) {
+                return;
+            }
+
+            const destinatie = destinatieInput.value.trim();
+            if (!destinatie) {
+                return;
+            }
+
+            // Regenerează ruta cu noul mod (mașină / pe jos)
+            cautaRuta();
+        });
+    }
+    // schimbare ora plecarii fara enter
+    const oraPlecareInput = document.getElementById('oraPlecareInput');
+    if (oraPlecareInput) {
+        oraPlecareInput.addEventListener('change', () => {
+            const destinatieInput = document.getElementById('destinatie');
+            if (!destinatieInput) {
+                return;
+            }
+
+            const destinatie = destinatieInput.value.trim();
+            if (!destinatie) {
+                return;
+            }
+
+            cautaRuta();
+        });
+    }
 
     // cautare la click pe buton
     const btnSearch = document.getElementById('btn-search');

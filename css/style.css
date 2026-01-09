@@ -39,18 +39,6 @@ body {
     fill: #70757a;
 }
 
-#destinatie {
-    flex: 1;
-    border: none;
-    outline: none;
-    padding: 0 12px;
-    font-size: 16px;
-    color: #000000;
-    background: transparent;
-}
-
-
-
 #controls {
     margin: 10px;
 }
@@ -298,18 +286,6 @@ button:hover {
     }
 }
 
-#search-container {
-    position: absolute;
-    top: 70px;
-    /* 75px header + 15px spațiu */
-    left: 10px;
-    z-index: 1000;
-    width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
 .search-box {
     background: white;
     height: 48px;
@@ -536,9 +512,9 @@ button:hover {
     /*; Efect de text gradient (verde spre albastru) */
     background: linear-gradient(90deg, #d9ffd9, #00ff88, #00ccff);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent
-        /* Strălucire neon */
-        text-shadow: 0 0 3px rgba(0, 255, 136, 0.4);
+    -webkit-text-fill-color: transparent;
+    /* Strălucire neon */
+    text-shadow: 0 0 3px rgba(0, 255, 136, 0.4);
 }
 
 .logo-container {
@@ -572,4 +548,43 @@ button:hover {
     100% {
         transform: translateY(0px);
     }
+}
+
+/* Stil comun pentru controalele mici (select + time + buton) */
+.mini-control {
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #3c4043;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.mini-control:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    border-color: #bcc1c8;
+    background-color: #ffffff;
+}
+
+.mini-control:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* specific doar pentru time */
+#oraPlecareInput {
+    width: 100px;
+    text-align: center;
+}
+
+/* specific doar pentru select, dacă mai ai nevoie */
+#modDeplasare {
+    appearance: none;
+    -webkit-appearance: none;
 }
