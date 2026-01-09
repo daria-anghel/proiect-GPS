@@ -514,3 +514,62 @@ button:hover {
     width: 100%;
     cursor: crosshair !important;
 }
+
+.top-bar {
+    background-color: #8a84a73f;
+    padding: 15px 0;
+    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.1);
+    /* O umbră verde fină sub bară */
+    position: relative;
+    z-index: 2000;
+    /* Să stea peste hartă */
+}
+
+.top-bar h2 {
+    font-family: 'Orbitron', sans-serif;
+    /* Fontul futuristic */
+    font-size: 28px;
+    margin: 0;
+    letter-spacing: 2px;
+    /* Litere mai distanțate */
+
+    /*; Efect de text gradient (verde spre albastru) */
+    background: linear-gradient(90deg, #d9ffd9, #00ff88, #00ccff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent
+        /* Strălucire neon */
+        text-shadow: 0 0 3px rgba(0, 255, 136, 0.4);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Centrează totul */
+    gap: 15px;
+    /* Spațiu între poză și scris */
+}
+
+.app-logo {
+    width: 35px;
+    height: 35px;
+    stroke: #00ff88;
+    /* Culoarea icoanei */
+    animation: float 3s ease-in-out infinite;
+    /* O facem să plutească */
+}
+
+/* Animație simplă de plutire */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
