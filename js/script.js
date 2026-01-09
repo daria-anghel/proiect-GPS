@@ -97,7 +97,14 @@ function initMap() {
     `;
 
         selectedPointMarker.bindPopup(popupHtmlCompact, { closeButton: true, maxWidth: 260 }).openPopup();
-
+        selectedPointMarker.on('popupclose', () => {
+            if (selectedPointMarker) {
+                map.removeLayer(selectedPointMarker);
+                selectedPointMarker = null;
+            }
+            selectedPointCoords = null;
+            selectedPointAddress = null;
+        });
         // Reverse geocoding (NU afișăm adresa, doar activăm butonul când e gata)
         const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
 
