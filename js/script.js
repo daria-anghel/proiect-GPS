@@ -8,6 +8,7 @@ let geoWatchId = null;
 let selectedPointMarker;
 let selectedPointCoords;
 let selectedPointAddress;
+let selectedDestination = null;
 const routesHistory = {};
 
 // 1. Funcție pentru a seta/reseta ora la momentul curent
@@ -160,6 +161,12 @@ function initMap() {
 
                 const valueToSet = selectedPointAddress || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
                 destinatieInput.value = valueToSet;
+                //salvam coordonatele reale ale punctului selectat
+                selectedDestination = {
+                    lat: lat,
+                    lon: lng,
+                    label: valueToSet
+                };
 
                 // Eliminăm markerul “selectat” ca să nu rămână 2 markere apropiate
                 if (selectedPointMarker) {
@@ -167,7 +174,7 @@ function initMap() {
                     selectedPointMarker = null;
                 }
 
-                await cautaRuta();
+                await cautaRuta({ lat: lat, lon: lng, label: valueToSet });
             }, { once: true });
         }, 0);
     });
@@ -208,7 +215,7 @@ function initMap() {
         return distanceKm(coords, BRASOV_CENTER) <= BRASOV_RADIUS_KM;
     }
     // 4. Funcția principală de calcul rută
-    async function cautaRuta() {
+    async function cautaRuta(destOverride = null) {
         if (!map || !userCoords) {
             alert("Așteaptă localizarea GPS!");
             return;
@@ -220,14 +227,27 @@ function initMap() {
 
         if (!destinatie) return;
 
-        // Geocodare Nominatim
-        const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destinatie)}`;
-        const geoRes = await fetch(geocodeUrl);
-        const geoData = await geoRes.json();
-        if (geoData.length === 0) return alert("Locație negăsită!");
+        let destCoords = null;
 
-        const destCoords = [parseFloat(geoData[0].lat), parseFloat(geoData[0].lon)];
+        // 1) Dacă avem coordonate dintr-o selecție (click pe hartă / rezultat), le folosim direct
+        if (destOverride && typeof destOverride.lat === "number" && typeof destOverride.lon === "number") {
+            destCoords = [destOverride.lat, destOverride.lon];
+        } else if (selectedDestination && typeof selectedDestination.lat === "number" && typeof selectedDestination.lon === "number") {
+            // 2) Dacă există o destinație selectată global, o folosim
+            destCoords = [selectedDestination.lat, selectedDestination.lon];
+        } else {
+            // 3) Altfel, căutare normală după text (Nominatim)
+            const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destinatie)}`;
+            const geoRes = await fetch(geocodeUrl);
+            const geoData = await geoRes.json();
 
+            if (geoData.length === 0) {
+                alert("Locație negăsită!");
+                return;
+            }
+
+            destCoords = [parseFloat(geoData[0].lat), parseFloat(geoData[0].lon)];
+        }
         // OpenRouteService API
         const apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjVlNTNhMjUxYWE2ODQ0ZTdhY2JiNzhjMTI1ZGVmZWFhIiwiaCI6Im11cm11cjY0In0=";
         const routeUrl = `https://api.openrouteservice.org/v2/directions/${mod}?api_key=${apiKey}&start=${userCoords[1]},${userCoords[0]}&end=${destCoords[1]},${destCoords[0]}&preference=fastest`;
@@ -314,7 +334,8 @@ function initMap() {
             }
 
             map.fitBounds(routeLayer.getBounds());
-            actualizeazaIstoric(destinatie);
+            const destKey = `${destinatie} (${destCoords[0].toFixed(5)}, ${destCoords[1].toFixed(5)})`;
+            actualizeazaIstoric(destKey);
         }
     }
 
@@ -333,6 +354,8 @@ function initMap() {
     // cautare la enter
     document.getElementById('destinatie').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
+            // User caută manual după text -> anulăm selecția pe coordonate
+            selectedDestination = null;
             cautaRuta();
         }
     });
@@ -377,6 +400,7 @@ function initMap() {
     const btnSearch = document.getElementById('btn-search');
     if (btnSearch) {
         btnSearch.addEventListener('click', () => {
+            selectedDestination = null;
             cautaRuta();
         });
 
