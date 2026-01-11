@@ -86,9 +86,9 @@ function initMap() {
             </div>
             <button id="btn-directions-from-map" style="
                 width:100%;
-                padding:8px 10px;
-                border:none;
-                border-radius:8px;
+                padding: 12px 12px;
+border-radius: 12px;
+font-size: 16px;
                 cursor:pointer;
                 font-weight:700;
                 background:#0066ff;

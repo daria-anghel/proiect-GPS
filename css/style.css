@@ -588,3 +588,100 @@ button:hover {
     appearance: none;
     -webkit-appearance: none;
 }
+
+@media (max-width: 768px) {
+    header {
+        height: 56px;
+        padding: 8px 12px;
+    }
+
+    header h1,
+    header .title {
+        font-size: 16px;
+        letter-spacing: 0.5px;
+    }
+
+    /* Bara de căutare sus, full width */
+    #search-bar,
+    .search-container {
+        position: fixed;
+        top: 62px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        z-index: 1200;
+    }
+
+    #destinatie {
+        width: 100%;
+        font-size: 16px;
+        /* important pt iOS: evită zoom */
+        padding: 12px 14px;
+        border-radius: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    #route-details-card {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        top: auto;
+        width: auto;
+        max-width: none;
+        border-radius: 18px;
+        z-index: 1300;
+
+        /* reduce înălțimea */
+        padding: 12px 14px;
+    }
+
+    #route-details-card #card-content {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    #istoric-panel,
+    .history-panel {
+        position: fixed;
+        left: 10px;
+        bottom: 110px;
+        /* deasupra cardului rutei */
+        width: calc(100% - 20px);
+        z-index: 1200;
+        border-radius: 18px;
+    }
+
+    #istoric-dropdown {
+        width: 100%;
+        font-size: 16px;
+        padding: 10px 12px;
+    }
+
+    #btn-delete {
+        width: 100%;
+        margin-top: 8px;
+        padding: 10px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .leaflet-control-zoom {
+        margin-top: 80px;
+        /* sub search bar */
+    }
+}
+
+@media (max-width: 768px) {
+    #route-details-card {
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    }
+
+    #search-bar,
+    .search-container {
+        top: calc(62px + env(safe-area-inset-top));
+    }
+}
