@@ -685,3 +685,75 @@ button:hover {
         top: calc(62px + env(safe-area-inset-top));
     }
 }
+
+/*
+   MOBILE FIXES (telefon)
+*/
+@media (max-width: 768px) {
+
+    /* 1) TITLU: să NU mai treacă pe 2 rânduri */
+    header.top-bar .logo-container h2 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        /* ajustează după gust; 20–22 e ok pe majoritatea telefoanelor */
+        font-size: 22px;
+        line-height: 1.1;
+
+        /* ca să nu se „bată” cu logo-ul */
+        max-width: calc(100vw - 90px);
+    }
+
+    /* dacă ai header pe flex, ajută să păstrezi totul pe un singur rând */
+    header.top-bar .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    /* 2) SUPRAPUNERE: Istoric (sidebar) + Detalii rută */
+
+    /* Sidebar devine bottom panel */
+    #sidebar {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        top: auto;
+
+        width: auto;
+        max-width: none;
+
+        max-height: 34vh;
+        /* cât ocupă istoric pe ecran */
+        overflow: auto;
+
+        z-index: 1200;
+        border-radius: 18px;
+    }
+
+    /* Cardul de rută urcă deasupra istoricului */
+    #route-details-card {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+
+        /* aceeași valoare ca max-height-ul sidebar-ului (34vh) */
+        bottom: calc(10px + 34vh + 10px);
+
+        top: auto;
+        width: auto;
+        max-width: none;
+
+        z-index: 1300;
+        border-radius: 18px;
+    }
+
+
+    #destinatie {
+        font-size: 16px;
+    }
+
+}

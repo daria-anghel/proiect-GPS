@@ -79,7 +79,7 @@ function initMap() {
 
         // Popup compact (fără adresă)
         const popupHtmlCompact = `
-        <div style="text-align:left; min-width:180px;">
+        <div style="text-align:left; min-width:220px;">
             <div style="font-weight:700; margin-bottom:8px;">Destinație selectată</div>
             <div id="map-pick-status" style="font-size:12px; color:#666; margin-bottom:10px;">
                 Caut adresa...
@@ -87,8 +87,8 @@ function initMap() {
             <button id="btn-directions-from-map" style="
                 width:100%;
                 padding: 12px 12px;
-border-radius: 12px;
-font-size: 16px;
+                border-radius: 12px;
+                font-size: 16px;
                 cursor:pointer;
                 font-weight:700;
                 background:#0066ff;
