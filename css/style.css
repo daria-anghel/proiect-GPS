@@ -597,109 +597,131 @@ button:hover {
 }
 
 /* =========================================
-   DESIGN PENTRU TELEFON (IMPORTAT DIN FIGMA)
+   DESIGN PENTRU TELEFON (FIXAT)
    ========================================= */
 @media screen and (max-width: 768px) {
 
-    /* 1. HARTA - Rămâne pe fundal */
+    /* 1. HARTA */
     #map {
         height: 100vh;
-        /* Tot ecranul */
         width: 100%;
         z-index: 0;
     }
 
-    /* 2. HEADER - Bara de sus cu gradient */
+    /* 2. HEADER - Stil Neon & Font Orbitron */
     header.top-bar {
-        background: linear-gradient(0deg, rgba(13, 13, 13, 1) 0%, rgba(50, 50, 50, 1) 100%);
-        border-bottom: 1px solid var(--verde-inchis);
-        box-shadow: 0px 4px 15px rgba(0, 255, 0, 0.1);
-        padding: 15px;
-        position: relative;
+        background: linear-gradient(180deg, rgba(13, 13, 13, 1) 0%, rgba(30, 30, 30, 0.9) 100%);
+        border-bottom: 1px solid #285232;
+        padding: 10px 0;
         z-index: 1002;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: auto;
     }
 
-    header h2 {
-        /* Efectul ala cool de text gradient din Figma */
-        background: linear-gradient(90deg, #d9ffd9 0%, #00ff88 50%, #00ccff 100%);
+    header.top-bar h2 {
+        font-family: 'Orbitron', sans-serif;
+        /* Fontul futurist */
+        font-size: 22px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        /* Îl forțăm pe 2 rânduri */
+        align-items: center;
+        line-height: 1.2;
+
+        /* Gradient text */
+        background: linear-gradient(90deg, #d9ffd9, #00ff88, #00ccff);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin: 0;
-        font-size: 20px;
+
+        /* Glow effect */
+        text-shadow: 0px 0px 10px rgba(0, 255, 136, 0.4);
     }
 
-    /* 3. BARA DE CĂUTARE - O mutăm să semene cu .container-6 din Figma */
+    /* 3. BARA DE CĂUTARE */
     #search-container {
-        top: 80px;
-        /* Imediat sub header */
+        top: 90px;
+        /* Mai jos, să nu intre peste titlu */
         left: 50%;
         transform: translateX(-50%);
-        /* Centrare perfectă */
-        width: 90%;
-        /* Mai lat pe telefon */
-        background: transparent;
-        gap: 15px;
+        width: 92%;
+        gap: 10px;
     }
 
-    .search-box {
-        /* Stilul din .background-shadow */
-        background-color: #ffffff;
-        border-radius: 24px;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-        height: 50px;
-    }
-
-    /* Butoanele de sub search (Masina, Pieton, Ora) */
     .sub-controls {
         justify-content: space-between;
-        /* Să se întindă frumos */
-    }
-
-    .mini-control,
-    .btn-now {
-        background: white;
-        border: 1px solid #dddddd;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-        color: #3c4043;
     }
 
     /* 4. CARDUL DE JOS (Detalii Rută) */
-    /* Îl facem să arate ca .overlay-border din Figma */
     #route-details-card {
         width: 90%;
-        /* Aproape cat ecranul */
         left: 5%;
-        /* Centrat */
         bottom: 20px;
-        background-color: rgba(0, 0, 0, 0.9);
-        /* Mai închis, ca în Figma */
-        border: 1px solid var(--verde-inchis);
-        border-radius: 12px;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+        background-color: rgba(13, 13, 13, 0.95);
+        /* Aproape opac */
+        border: 1px solid #285232;
+        border-radius: 15px;
         padding: 15px;
-
-        /* Aranjare text */
-        display: flex;
-        /* Daca e ascuns (none), JS-ul il va face block sau flex */
-        flex-direction: column;
-        align-items: center;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
     }
 
-    .card-header {
-        /* Linia aia verde de sus - .horizontal-border */
-        border-bottom: 1px solid var(--verde-inchis);
-        color: var(--verde-neon);
-        font-family: 'Arial', sans-serif;
-        font-weight: bold;
-        width: 100%;
-        text-align: center;
-        padding-bottom: 10px;
-        margin-bottom: 10px;
-    }
-
-    /* 5. ASCUNDEM SIDEBAR-UL VECHI */
-    /* Pe telefon nu avem loc de lista aia mare din stanga jos */
+    /* 5. SIDEBAR (ISTORIC) - POPUP FIXAT */
+    /* Asta îl face să arate ca în poza ta target */
     #sidebar {
         display: none;
+        /* Ascuns până apeși butonul */
+
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /* Centrat perfect */
+
+        width: 85%;
+        max-width: 300px;
+        max-height: 400px;
+
+        background-color: #000000;
+        border: 2px solid #8cff8c;
+        /* Bordură verde neon */
+        border-radius: 20px;
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+        z-index: 2001;
+        /* Peste tot */
+    }
+
+    /* Clasa care îl face vizibil (folosită de JS) */
+    #sidebar.show-mobile {
+        display: block;
+        animation: popupFade 0.3s ease-out;
+    }
+
+    /* Stilizare butoane istoric să fie mari pe telefon */
+    .istoric-dropdown {
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+    .btn-delete {
+        padding: 12px;
+        font-size: 16px;
+    }
+}
+
+/* Animație pentru apariția istoricului */
+@keyframes popupFade {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
     }
 }
