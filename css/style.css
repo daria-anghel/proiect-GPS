@@ -1,3 +1,16 @@
+:root {
+    /* Culori și Fonturi din Figma */
+    --font-principal: 'Montserrat', sans-serif;
+    /* Folosim fontul tau existent */
+    --verde-neon: #8cff8c;
+    --verde-inchis: #285232;
+    --bg-card: rgba(0, 0, 0, 0.85);
+
+    /* Aici sunt variabilele generate de plugin, le pastram ca sa nu se strice ceva */
+    --semantic-heading-2-font-size: 24px;
+    --semantic-heading-3-font-size: 18px;
+}
+
 body {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
@@ -38,6 +51,18 @@ body {
     height: 20px;
     fill: #70757a;
 }
+
+#destinatie {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0 12px;
+    font-size: 16px;
+    color: #000000;
+    background: transparent;
+}
+
+
 
 #controls {
     margin: 10px;
@@ -286,6 +311,18 @@ button:hover {
     }
 }
 
+#search-container {
+    position: absolute;
+    top: 70px;
+    /* 75px header + 15px spațiu */
+    left: 10px;
+    z-index: 1000;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .search-box {
     background: white;
     height: 48px;
@@ -492,7 +529,7 @@ button:hover {
 }
 
 .top-bar {
-    background-color: #8a84a73f;
+    background-color: #52596188;
     padding: 15px 0;
     box-shadow: 0 4px 15px rgba(0, 255, 0, 0.1);
     /* O umbră verde fină sub bară */
@@ -509,12 +546,13 @@ button:hover {
     letter-spacing: 2px;
     /* Litere mai distanțate */
 
-    /*; Efect de text gradient (verde spre albastru) */
+    /* Efect de text gradient (verde spre albastru) */
     background: linear-gradient(90deg, #d9ffd9, #00ff88, #00ccff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
     /* Strălucire neon */
-    text-shadow: 0 0 3px rgba(0, 255, 136, 0.4);
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
 }
 
 .logo-container {
@@ -541,8 +579,16 @@ button:hover {
         transform: translateY(0px);
     }
 
+    25% {
+        transform: translateY(-2px);
+    }
+
     50% {
         transform: translateY(-5px);
+    }
+
+    75% {
+        transform: translateY(-2px);
     }
 
     100% {
@@ -550,41 +596,110 @@ button:hover {
     }
 }
 
-/* Stil comun pentru controalele mici (select + time + buton) */
-.mini-control {
-    background: white;
-    border: 1px solid #dadce0;
-    border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 13px;
-    color: #3c4043;
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    outline: none;
-    transition: all 0.2s ease-in-out;
-}
+/* =========================================
+   DESIGN PENTRU TELEFON (IMPORTAT DIN FIGMA)
+   ========================================= */
+@media screen and (max-width: 768px) {
 
-.mini-control:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    border-color: #bcc1c8;
-    background-color: #ffffff;
-}
+    /* 1. HARTA - Rămâne pe fundal */
+    #map {
+        height: 100vh;
+        /* Tot ecranul */
+        width: 100%;
+        z-index: 0;
+    }
 
-.mini-control:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+    /* 2. HEADER - Bara de sus cu gradient */
+    header.top-bar {
+        background: linear-gradient(0deg, rgba(13, 13, 13, 1) 0%, rgba(50, 50, 50, 1) 100%);
+        border-bottom: 1px solid var(--verde-inchis);
+        box-shadow: 0px 4px 15px rgba(0, 255, 0, 0.1);
+        padding: 15px;
+        position: relative;
+        z-index: 1002;
+    }
 
-/* specific doar pentru time */
-#oraPlecareInput {
-    width: 100px;
-    text-align: center;
-}
+    header h2 {
+        /* Efectul ala cool de text gradient din Figma */
+        background: linear-gradient(90deg, #d9ffd9 0%, #00ff88 50%, #00ccff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+        font-size: 20px;
+    }
 
-/* specific doar pentru select, dacă mai ai nevoie */
-#modDeplasare {
-    appearance: none;
-    -webkit-appearance: none;
+    /* 3. BARA DE CĂUTARE - O mutăm să semene cu .container-6 din Figma */
+    #search-container {
+        top: 80px;
+        /* Imediat sub header */
+        left: 50%;
+        transform: translateX(-50%);
+        /* Centrare perfectă */
+        width: 90%;
+        /* Mai lat pe telefon */
+        background: transparent;
+        gap: 15px;
+    }
+
+    .search-box {
+        /* Stilul din .background-shadow */
+        background-color: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+        height: 50px;
+    }
+
+    /* Butoanele de sub search (Masina, Pieton, Ora) */
+    .sub-controls {
+        justify-content: space-between;
+        /* Să se întindă frumos */
+    }
+
+    .mini-control,
+    .btn-now {
+        background: white;
+        border: 1px solid #dddddd;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        color: #3c4043;
+    }
+
+    /* 4. CARDUL DE JOS (Detalii Rută) */
+    /* Îl facem să arate ca .overlay-border din Figma */
+    #route-details-card {
+        width: 90%;
+        /* Aproape cat ecranul */
+        left: 5%;
+        /* Centrat */
+        bottom: 20px;
+        background-color: rgba(0, 0, 0, 0.9);
+        /* Mai închis, ca în Figma */
+        border: 1px solid var(--verde-inchis);
+        border-radius: 12px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+        padding: 15px;
+
+        /* Aranjare text */
+        display: flex;
+        /* Daca e ascuns (none), JS-ul il va face block sau flex */
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card-header {
+        /* Linia aia verde de sus - .horizontal-border */
+        border-bottom: 1px solid var(--verde-inchis);
+        color: var(--verde-neon);
+        font-family: 'Arial', sans-serif;
+        font-weight: bold;
+        width: 100%;
+        text-align: center;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+
+    /* 5. ASCUNDEM SIDEBAR-UL VECHI */
+    /* Pe telefon nu avem loc de lista aia mare din stanga jos */
+    #sidebar {
+        display: none;
+    }
 }
