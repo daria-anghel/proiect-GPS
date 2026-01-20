@@ -1,33 +1,99 @@
 :root {
-    /* Culori și Fonturi din Figma */
+    /* --- Variabile Culori și Fonturi --- */
     --font-principal: 'Montserrat', sans-serif;
-    /* Folosim fontul tau existent */
+    --font-titlu: 'Orbitron', sans-serif;
     --verde-neon: #8cff8c;
     --verde-inchis: #285232;
     --bg-card: rgba(0, 0, 0, 0.85);
-
-    /* Aici sunt variabilele generate de plugin, le pastram ca sa nu se strice ceva */
-    --semantic-heading-2-font-size: 24px;
-    --semantic-heading-3-font-size: 18px;
 }
 
 body {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-principal);
     margin: 0;
     text-align: center;
     background-color: #0d0d0d;
     color: #d9ffd9;
 }
 
+/* =========================================
+   1. HARTA & LEAFLET
+   ========================================= */
 #map {
     height: 90vh;
     width: 100%;
+    cursor: crosshair !important;
+    z-index: 0;
 }
 
+/* Mutăm butoanele de zoom mai jos să nu se bată cu search-ul */
+.leaflet-top.leaflet-left {
+    margin-top: 200px !important;
+}
+
+/* Iconița locație utilizator (Punctul Albastru) */
+.user-location-icon {
+    background-color: #4285F4;
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    position: relative;
+}
+
+.user-location-icon::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(66, 133, 244, 0.4);
+    animation: pulse 2s infinite;
+    left: -3px;
+    top: -3px;
+    border: 3px solid transparent;
+}
+
+/* =========================================
+   2. HEADER (BARA DE SUS)
+   ========================================= */
+.top-bar {
+    background-color: #52596188;
+    padding: 15px 0;
+    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.1);
+    position: relative;
+    z-index: 2000;
+}
+
+.top-bar h2 {
+    font-family: var(--font-titlu);
+    font-size: 28px;
+    margin: 0;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #d9ffd9, #00ff88, #00ccff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.app-logo {
+    width: 35px;
+    height: 35px;
+    stroke: #00ff88;
+    animation: float 3s ease-in-out infinite;
+}
+
+/* =========================================
+   3. ZONA DE CĂUTARE (SEARCH)
+   ========================================= */
 #search-container {
     position: absolute;
-    top: 75px;
-    /* 60px header + 15px spațiu */
+    top: 70px;
     left: 20px;
     z-index: 1000;
     width: 392px;
@@ -43,6 +109,11 @@ body {
     display: flex;
     align-items: center;
     padding: 0 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.2s;
+}
+
+.search-box:focus-within {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
@@ -50,6 +121,7 @@ body {
     width: 20px;
     height: 20px;
     fill: #70757a;
+    cursor: pointer;
 }
 
 #destinatie {
@@ -58,53 +130,151 @@ body {
     outline: none;
     padding: 0 12px;
     font-size: 16px;
+    font-family: var(--font-principal);
     color: #000000;
     background: transparent;
 }
 
-
-
-#controls {
-    margin: 10px;
+#destinatie::placeholder {
+    color: #000000;
+    opacity: 0.7;
+    font-family: var(--font-principal);
 }
 
-input[type="text"] {
-    padding: 8px 12px;
-    width: 280px;
-    max-width: 90%;
-    background-color: #000000;
-    color: #d0eed0;
-    outline: none;
-    box-shadow: 0 0 10px #0f6000;
-    font-family: 'Montserrat', sans-serif;
+/* Autocomplete List */
+.autocomplete-list {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-top: 5px;
+    max-height: 250px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1001;
+    text-align: left;
 }
 
-input[type="text"]::placeholder {
-    color: #8cff8c;
-    font-family: 'Montserrat', sans-serif;
-}
-
-button {
-    padding: 8px 16px;
-    background-color: #093b01;
-    color: #0d0d0d;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
+.autocomplete-item {
+    padding: 12px 16px;
     cursor: pointer;
-    margin-left: 5px;
-    box-shadow: 0 0 10px #0f6000;
-    transition: 0.2s ease;
+    color: #3c4043;
+    border-bottom: 1px solid #f1f3f4;
+    font-size: 14px;
+    transition: background 0.2s;
 }
 
-button:hover {
-    box-shadow: 0 0 18px #003d00;
-    background-color: #004f00;
+.autocomplete-item:hover {
+    background-color: #f8f9fa;
 }
 
+/* =========================================
+   4. CONTROALE SECUNDARE (Butoane, Timp)
+   ========================================= */
+.sub-controls {
+    display: flex;
+    gap: 8px;
+    padding: 0 4px;
+}
 
+.mini-select,
+.mini-input,
+#modDeplasare {
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 16px;
+    padding: 4px 12px;
+    font-size: 13px;
+    color: #3c4043;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    font-family: var(--font-principal);
+    appearance: none;
+    /* Scoate stilul default browser */
+    -webkit-appearance: none;
+}
 
-/* Sidebar mic în stânga jos */
+#oraPlecareInput {
+    width: 100px;
+    padding: 6px 10px;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 20px;
+}
+
+.time-picker-group {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.btn-now {
+    background: white;
+    border: 1px solid #dadce0;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #3c4043;
+    cursor: pointer;
+    font-weight: normal !important;
+    transition: all 0.2s ease;
+    font-family: var(--font-principal);
+}
+
+/* Hover Effects Comune */
+.mini-select:hover,
+.mini-input:hover,
+.btn-now:hover,
+#modDeplasare:hover,
+.chip-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    border-color: #bcc1c8;
+    background-color: #ffffff;
+}
+
+.mini-select:active,
+.btn-now:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* =========================================
+   5. DESTINAȚII RAPIDE (CHIPS)
+   ========================================= */
+#quick-destinations {
+    position: absolute;
+    top: 90px;
+    right: 15px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.chip-btn {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 150px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #333;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    font-weight: 600;
+    font-family: var(--font-principal);
+}
+
+/* =========================================
+   6. SIDEBAR (ISTORIC)
+   ========================================= */
 #sidebar {
     position: fixed;
     left: 20px;
@@ -124,8 +294,6 @@ button:hover {
     margin-top: 0;
     margin-bottom: 10px;
     font-size: 18px;
-    font-family: 'Montserrat', sans-serif;
-    text-align: center;
     color: #d4edda;
 }
 
@@ -136,11 +304,9 @@ button:hover {
     border-radius: 6px;
     border: 1px solid #285232;
     background-color: #d4edda;
-    /* verde deschis */
     color: #000;
-    /* text negru */
     font-weight: 600;
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-principal);
 }
 
 .btn-delete {
@@ -158,99 +324,15 @@ button:hover {
     background-color: #218838;
 }
 
-#modDeplasare {
-    background-color: white;
-    /* Fundal alb */
-    border: 1px solid #dadce0;
-    border-radius: 20px;
-    /* Rotunjit la fel ca butonul Acum */
-    padding: 8px 16px;
-    font-size: 14px;
-    color: #3c4043;
-    /* Text închis la culoare */
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    /* Același font */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    outline: none;
-    appearance: none;
-    /* Scoate săgeata default a browserului pentru un aspect mai curat */
-    -webkit-appearance: none;
-    transition: all 0.2s ease;
-}
-
-#modDeplasare:hover {
-    background: #f8f9fa;
-    border-color: #bcc1c8;
-}
-
-.mini-select-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
-#route-info {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-
-    margin: 8px auto 0;
-    padding: 6px 14px;
-
-    background: rgba(0, 0, 0, 0.65);
-    border: 1px solid rgba(40, 78, 33, 0.6);
-    border-radius: 999px;
-
-    color: #d9ffd9;
-    font-size: 14px;
-    font-weight: 600;
-
-    box-shadow:
-        0 0 10px rgba(19, 142, 0, 0.35),
-        inset 0 0 6px rgba(255, 255, 255, 0.08);
-
-    width: fit-content;
-}
-
-#status-msg {
-    margin-top: 6px;
-    font-size: 13px;
-    color: #9eff9e;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.route-label {
-    background: #ffffff;
-    color: #222;
-    padding: 6px 10px;
-    border-radius: 6px;
-
-    font-size: 13px;
-    font-weight: 600;
-
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-    border: 1px solid #ddd;
-
-    white-space: nowrap;
-    transform: translateY(-10px);
-}
-
-.route-info-wrapper {
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-/* Cardul de detalii din dreapta jos */
+/* =========================================
+   7. CARD DETALII RUTĂ (Dreapta Jos)
+   ========================================= */
 .route-details-card {
     position: absolute;
     right: 20px;
     bottom: 30px;
-    /* Puțin deasupra marginii pentru a nu acoperi copyright-ul hărții */
     width: 220px;
-    background-color: rgba(0, 0, 0, 0.85);
-    /* Dark mode*/
+    background-color: var(--bg-card);
     color: #d9ffd9;
     padding: 15px;
     border-radius: 12px;
@@ -258,7 +340,8 @@ button:hover {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     z-index: 1000;
     font-size: 14px;
-    pointer-events: auto;
+    display: none;
+    /* Ascuns implicit */
 }
 
 .card-header {
@@ -277,303 +360,77 @@ button:hover {
     margin-bottom: 5px;
 }
 
-/* Stil pentru punctul de locație curentă */
-.user-location-icon {
-    background-color: #4285F4;
-    border: 3px solid white;
-    border-radius: 50%;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-}
+/* =========================================
+   8. ALERTE ȘI POPUP-URI
+   ========================================= */
 
-/* Efectul de puls (opțional, dar arată profi) */
-.user-location-icon::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: rgba(66, 133, 244, 0.4);
-    animation: pulse 2s infinite;
-    left: -3px;
-    top: -3px;
-    border: 3px solid transparent;
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    100% {
-        transform: scale(2.5);
-        opacity: 0;
-    }
-}
-
-#search-container {
-    position: absolute;
-    top: 70px;
-    /* 75px header + 15px spațiu */
-    left: 10px;
-    z-index: 1000;
-    width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.search-box {
-    background: white;
-    height: 48px;
-    border-radius: 24px;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
-    transition: box-shadow 0.2s;
-}
-
-.search-box:focus-within {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-
-#destinatie {
-    flex: 1;
-    border: none;
-    outline: none;
-    padding: 0 10px;
-    font-size: 16px;
-    font-family: 'Montserrat', sans-serif;
-    color: #000000;
-    background: transparent;
-    box-shadow: none !important;
-    /* Scoatem umbra veche verde */
-}
-
-#destinatie::placeholder {
-    color: #000000;
-    /* Schimbat în NEGRU */
-    opacity: 0.7;
-    /* Opțional: puțin transparent pentru a arăta a sugestie */
-    font-family: 'Montserrat', sans-serif;
-}
-
-/* Stil pentru controalele secundare (ora, mod deplasare) */
-.sub-controls {
-    display: flex;
-    gap: 8px;
-    padding: 0 4px;
-}
-
-.mini-select,
-.mini-input {
-    background: white;
-    border: 1px solid #dadce0;
-    border-radius: 16px;
-    padding: 4px 12px;
-    font-size: 13px;
-    color: #3c4043;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.btn-now {
-    background: white;
-    border: 1px solid #dadce0;
-    border-radius: 20px;
-    padding: 8px 16px;
-    font-size: 14px;
-    color: #3c4043;
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
-
-    /* MODIFICAREA AICI: Elimină bold-ul */
-    font-weight: normal !important;
-}
-
-.btn-now:hover {
-    background: #f8f9fa;
-}
-
-/*autocomplete list */
-.autocomplete-list {
-    background: white;
+/* Mesaj Bun Venit */
+.welcome-popup {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    width: 260px;
+    background: rgba(0, 0, 0, 0.9);
+    color: #d9ffd9;
+    padding: 15px;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    margin-top: 5px;
-    max-height: 250px;
-    overflow-y: auto;
-    display: none;
-    /* Ascuns implicit */
-    z-index: 1001;
-    text-align: left;
+    border: 1px solid #00ff88;
+    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.2);
+    z-index: 9999;
+    font-family: var(--font-principal);
+    animation: slideInUp 0.5s ease-out;
 }
 
-.autocomplete-item {
-    padding: 12px 16px;
-    cursor: pointer;
-    color: #3c4043;
-    border-bottom: 1px solid #f1f3f4;
-    font-size: 14px;
-    transition: background 0.2s;
-}
-
-.autocomplete-item:hover {
-    background-color: #f8f9fa;
-}
-
-.autocomplete-item:last-child {
-    border-bottom: none;
-}
-
-/*nu se suprapune peste butoanele de zoom */
-.leaflet-top.leaflet-left {
-    margin-top: 200px !important;
-    /* Mută butoanele +/- sub bara de search */
-}
-
-#oraPlecareInput {
-    background-color: white;
-    border: 1px solid #dadce0;
-    border-radius: 20px;
-
-    /* Ajustări pentru dimensiune */
-    width: 100px;
-    /* Lățime fixă mai mică */
-    padding: 6px 10px;
-    /* Padding redus pe lateral */
-
-    font-size: 14px;
-    color: #3c4043;
-    cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    outline: none;
-
-    /* Aliniere centrală a textului */
-    text-align: center;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    -webkit-appearance: none;
-    appearance: none;
-}
-
-/* Ajustăm și grupul de control pentru a fi mai strâns */
-.time-picker-group {
+.welcome-header {
     display: flex;
-    gap: 5px;
-    /* Spațiu mai mic între ceas și butonul Acum */
+    justify-content: space-between;
     align-items: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #00ff88;
 }
 
-/* Opțional: Micșorăm și butonul "Acum" ca să se potrivească */
-.btn-now {
-    padding: 6px 12px;
-    border-radius: 20px;
+.close-welcome {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+/* Alertă Zonă Risc (Galben cu puls) */
+.warning-box {
+    background: #ffcc00;
+    color: #000;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
     font-size: 13px;
-    font-weight: 400 !important;
+    font-weight: bold;
+    border-left: 5px solid #cc3300;
+    animation: pulseWarning 2s infinite;
 }
 
-/* Definirea efectului de hover universal pentru controale */
-.mini-select,
-.mini-input,
-.btn-now,
-#modDeplasare {
-    transition: all 0.2s ease-in-out;
-    /* Face tranziția lină */
+/* Buton Risc (Stilizare specială) */
+.btn-risk {
+    background-color: #444 !important;
+    color: white !important;
+    border: 1px solid #666 !important;
+    transition: all 0.3s ease;
 }
 
-/* Efectul propriu-zis la trecerea mouse-ului (Hover) */
-.mini-select:hover,
-.mini-input:hover,
-.btn-now:hover,
-#modDeplasare:hover {
-    transform: translateY(-2px);
-    /* Ridică elementul cu 2 pixeli */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    /* Face umbra mai pronunțată */
-    border-color: #bcc1c8;
-    /* Schimbă subtil bordura */
-    background-color: #ffffff;
-    /* Se asigură că rămâne alb curat */
+.btn-risk.active {
+    background-color: #ff6600 !important;
+    color: black !important;
+    border: 1px solid #cc3300 !important;
+    box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+    font-weight: bold;
 }
 
-/* Efect de apăsare (Click) pentru feedback tactil */
-.mini-select:active,
-.mini-input:active,
-.btn-now:active,
-#modDeplasare:active {
-    transform: translateY(0);
-    /* Revine la poziția inițială când apeși */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.user-location-icon {
-    position: relative;
-}
-
-.search-icon {
-    cursor: pointer;
-}
-
-#map {
-    height: 90vh;
-    width: 100%;
-    cursor: crosshair !important;
-}
-
-.top-bar {
-    background-color: #52596188;
-    padding: 15px 0;
-    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.1);
-    /* O umbră verde fină sub bară */
-    position: relative;
-    z-index: 2000;
-    /* Să stea peste hartă */
-}
-
-.top-bar h2 {
-    font-family: 'Orbitron', sans-serif;
-    /* Fontul futuristic */
-    font-size: 28px;
-    margin: 0;
-    letter-spacing: 2px;
-    /* Litere mai distanțate */
-
-    /* Efect de text gradient (verde spre albastru) */
-    background: linear-gradient(90deg, #d9ffd9, #00ff88, #00ccff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-
-    /* Strălucire neon */
-    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* Centrează totul */
-    gap: 15px;
-    /* Spațiu între poză și scris */
-}
-
-.app-logo {
-    width: 35px;
-    height: 35px;
-    stroke: #00ff88;
-    /* Culoarea icoanei */
-    animation: float 3s ease-in-out infinite;
-    /* O facem să plutească */
-}
-
-/* Animație simplă de plutire */
+/* =========================================
+   9. ANIMAȚII
+   ========================================= */
 @keyframes float {
     0% {
         transform: translateY(0px);
@@ -596,111 +453,115 @@ button:hover {
     }
 }
 
-/* =========================================
-   DESIGN PENTRU TELEFON (FIXAT)
-   ========================================= */
-@media screen and (max-width: 768px) {
-
-    /* 1. HARTA */
-    #map {
-        height: 100vh;
-        width: 100%;
-        z-index: 0;
+@keyframes slideInUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
     }
 
-    /* 2. HEADER - Stil Neon & Font Orbitron */
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulseWarning {
+    0% {
+        box-shadow: 0 0 0px #ffcc00;
+    }
+
+    50% {
+        box-shadow: 0 0 10px #ff3300;
+    }
+
+    100% {
+        box-shadow: 0 0 0px #ffcc00;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+.fade-out {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+/* =========================================
+   10. MOBILE RESPONSIVE
+   ========================================= */
+@media screen and (max-width: 1024px) {
+    #quick-destinations {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #map {
+        height: 100vh;
+    }
+
     header.top-bar {
         background: linear-gradient(180deg, rgba(13, 13, 13, 1) 0%, rgba(30, 30, 30, 0.9) 100%);
         border-bottom: 1px solid #285232;
         padding: 10px 0;
         z-index: 1002;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: auto;
     }
 
     header.top-bar h2 {
-        font-family: 'Orbitron', sans-serif;
-        /* Fontul futurist */
+        font-family: var(--font-titlu);
         font-size: 22px;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin: 0;
-        display: flex;
         flex-direction: column;
-        /* Îl forțăm pe 2 rânduri */
-        align-items: center;
-        line-height: 1.2;
-
-        /* Gradient text */
-        background: linear-gradient(90deg, #d9ffd9, #00ff88, #00ccff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-
-        /* Glow effect */
-        text-shadow: 0px 0px 10px rgba(0, 255, 136, 0.4);
     }
 
-    /* 3. BARA DE CĂUTARE */
     #search-container {
         top: 90px;
-        /* Mai jos, să nu intre peste titlu */
         left: 50%;
         transform: translateX(-50%);
         width: 92%;
-        gap: 10px;
     }
 
     .sub-controls {
         justify-content: space-between;
     }
 
-    /* 4. CARDUL DE JOS (Detalii Rută) */
     #route-details-card {
         width: 90%;
         left: 5%;
         bottom: 20px;
         background-color: rgba(13, 13, 13, 0.95);
-        /* Aproape opac */
-        border: 1px solid #285232;
-        border-radius: 15px;
-        padding: 15px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
     }
 
-    /* 5. SIDEBAR (ISTORIC) - POPUP FIXAT */
-    /* Asta îl face să arate ca în poza ta target */
+    /* Sidebar pe mobil devine Popup */
     #sidebar {
         display: none;
-        /* Ascuns până apeși butonul */
-
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        /* Centrat perfect */
-
         width: 85%;
         max-width: 300px;
         max-height: 400px;
-
-        background-color: #000000;
         border: 2px solid #8cff8c;
-        /* Bordură verde neon */
-        border-radius: 20px;
         box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
         z-index: 2001;
-        /* Peste tot */
     }
 
-    /* Clasa care îl face vizibil (folosită de JS) */
     #sidebar.show-mobile {
         display: block;
         animation: popupFade 0.3s ease-out;
     }
 
-    /* Stilizare butoane istoric să fie mari pe telefon */
     .istoric-dropdown {
         padding: 10px;
         font-size: 16px;
@@ -713,7 +574,6 @@ button:hover {
     }
 }
 
-/* Animație pentru apariția istoricului */
 @keyframes popupFade {
     from {
         opacity: 0;
@@ -724,101 +584,4 @@ button:hover {
         opacity: 1;
         transform: translate(-50%, -50%);
     }
-}
-
-.welcome-popup {
-    position: fixed;
-    bottom: 30px;
-    right: 20px;
-    width: 260px;
-    background: rgba(0, 0, 0, 0.9);
-    color: #d9ffd9;
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid #00ff88;
-    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.2);
-    z-index: 9999;
-    font-family: 'Montserrat', sans-serif;
-    animation: slideInUp 0.5s ease-out;
-}
-
-.welcome-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #00ff88;
-}
-
-.close-welcome {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-    line-height: 1;
-}
-
-@keyframes slideInUp {
-    from {
-        transform: translateY(100px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-.fade-out {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s, transform 0.5s;
-}
-
-/* Alertă Zonă Risc */
-.warning-box {
-    background: #ffcc00;
-    color: #000;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 10px;
-    font-size: 13px;
-    font-weight: bold;
-    border-left: 5px solid #cc3300;
-    animation: pulseWarning 2s infinite;
-}
-
-@keyframes slideInUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes pulseWarning { 0% { box-shadow: 0 0 0px #ffcc00; } 50% { box-shadow: 0 0 10px #ff3300; } 100% { box-shadow: 0 0 0px #ffcc00; } }
-.fade-out { opacity: 0; transition: 0.5s; }
-
-.btn-risk {
-    background-color: #444 !important;
-    color: white !important;
-    border: 1px solid #666 !important;
-    transition: all 0.3s ease;
-}
-
-.btn-risk.active {
-    background-color: #ff6600 !important;
-    color: black !important;
-    border: 1px solid #cc3300 !important;
-    box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
-    font-weight: bold;
-}
-.fade-out {
-    opacity: 0;
-    transition: opacity 0.5s ease-out;
-}
-
-.warning-box {
-    background: #ffcc00;
-    color: black;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 10px;
-    font-weight: bold;
-    border: 2px solid black;
 }

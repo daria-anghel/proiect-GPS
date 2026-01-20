@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="ro">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Tracking Brașov - Trafic</title>
+    <title>GPS Tracking & Rute Brașov</title>
+
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Montserrat:wght@400;600;700&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
+
     <header class="top-bar">
         <div class="logo-container">
             <svg class="app-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -20,22 +27,54 @@
 
     <div id="search-container">
         <div class="search-box">
-            <div class="search-icon" id="btn-search">
-                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
+            <div class="search-icon" id="btn-search" role="button" tabindex="0" aria-label="Caută ruta">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                </svg>
             </div>
+
             <input type="text" id="destinatie" placeholder="Introdu destinația..." autocomplete="off">
+
             <div class="directions-icon" onclick="cautaRuta()">
-                <svg viewBox="0 0 24 24"><path d="M22.43 11.59l-9.02-9.02c-.39-.39-1.02-.39-1.41 0l-9.02 9.02c-.39.39-.39 1.02 0 1.41l9.02 9.02c.39.39 1.02.39 1.41 0l9.02-9.02c.39-.39.39-1.02 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z" /></svg>
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M22.43 11.59l-9.02-9.02c-.39-.39-1.02-.39-1.41 0l-9.02 9.02c-.39.39-.39 1.02 0 1.41l9.02 9.02c.39.39 1.02.39 1.41 0l9.02-9.02c.39-.39.39-1.02 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z" />
+                </svg>
             </div>
         </div>
+
+        <div id="autocomplete-results" class="autocomplete-list"></div>
+
         <div class="sub-controls">
             <select id="modDeplasare" class="mini-control">
                 <option value="driving-car">🚗 Mașină</option>
                 <option value="foot-walking">🚶 Pe jos</option>
             </select>
-            <input type="time" id="oraPlecareInput" class="mini-control">
-            <button onclick="setOraCurenta()" class="mini-control btn-now">Acum</button>
+
+            <div class="time-picker-group">
+                <input type="time" id="oraPlecareInput" class="mini-control">
+                <button onclick="setOraCurenta()" class="mini-control btn-now">Acum</button>
+            </div>
         </div>
+    </div>
+
+    <div id="quick-destinations">
+        <button class="chip-btn" onclick="startNavigareRapida(45.6409, 25.5877, 'Biserica Neagră')">
+            🏰 Biserica Neagră
+        </button>
+
+        <button class="chip-btn" onclick="startNavigareRapida(45.6523, 25.6105, 'AFI Brașov')">
+            🛍️ AFI Brașov
+        </button>
+
+        <button class="chip-btn" onclick="startNavigareRapida(45.6678, 25.5973, 'Paradisul Acvatic')">
+            🏊 Paradisul Acvatic
+        </button>
+
+        <button class="chip-btn" onclick="startNavigareRapida(45.6315, 25.6358, 'Zoo Brașov')">
+            🦁 Zoo Brașov
+        </button>
     </div>
 
     <div id="map"></div>
@@ -53,16 +92,28 @@
         <div id="card-content"></div>
     </div>
 
+    <div id="welcome-message" class="welcome-popup">
+        <div class="welcome-header">
+            <span>Salut! 👋</span>
+            <button onclick="closeWelcome()" class="close-welcome">&times;</button>
+        </div>
+        <p>Bine ai venit pe harta noastră interactivă a Brașovului. Salahorii îți urează drum bun!</p>
+    </div>
+
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="js/script.js"></script>
 
-    <div id="welcome-message" class="welcome-popup">
-    <div class="welcome-header">
-        <span>Salut! 👋</span>
-        <button onclick="closeWelcome()" class="close-welcome">&times;</button>
-    </div>
-    <p>Bine ai venit pe harta noastră interactivă a Brașovului. Salahorii îți urează drum bun!</p>
-</div>
+    <script>
+        // Funcție mică pentru a închide mesajul de bun venit
+        function closeWelcome() {
+            const popup = document.getElementById('welcome-message');
+            popup.classList.add('fade-out');
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 500);
+        }
+    </script>
 
 </body>
+
 </html>
