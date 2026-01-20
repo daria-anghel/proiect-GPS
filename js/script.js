@@ -1,11 +1,10 @@
 // ==========================================
-// 1. VARIABILE GLOBALE ȘI CONFIGURARE
+// 1. VARIABILE GLOBALE
 // ==========================================
-let map, userMarker, routeLayer, destinationMarker, selectedPointMarker;
+let map, userMarker, routeLayer, destinationMarker;
 let userCoords, selectedDestination = null;
 let trafficLayers = [];
 
-// Poligoane pentru vizualizarea traficului
 const traficZones = {
     "Calea București": {
         coords: [[45.6350, 25.6150], [45.6320, 25.6350], [45.6150, 25.6550], [45.6100, 25.6450]],
@@ -25,7 +24,6 @@ const traficZones = {
     }
 };
 
-// Zone de risc (Cercuri de avertizare) - Raze reduse pentru precizie
 const zoneRisc = [
     { nume: "Bartolomeu", lat: 45.6620, lon: 25.5750, raza: 0.6 },
     { nume: "Zona Roman", lat: 45.6350, lon: 25.6150, raza: 0.5 },
@@ -34,10 +32,27 @@ const zoneRisc = [
 ];
 
 // ==========================================
-// 2. FUNCȚII UTILITARE
+// 2. FUNCȚII UTILITARE & TIMP
 // ==========================================
 
-// Calcul distanță între coordonate (Formula Haversine)
+function seteazaOraActuala() {
+    const acum = new Date();
+    const ore = String(acum.getHours()).padStart(2, '0');
+    const minute = String(acum.getMinutes()).padStart(2, '0');
+    const inputOra = document.getElementById('oraPlecareInput');
+    if (inputOra) inputOra.value = `${ore}:${minute}`;
+}
+
+function closeWelcome() {
+    const welcome = document.getElementById('welcome-message');
+    if (welcome) {
+        welcome.classList.add('fade-out'); // Adaugă animația de dispariție
+        setTimeout(() => {
+            welcome.style.display = 'none'; // Ascunde elementul definitiv
+        }, 500);
+    }
+}
+
 function calculeazaDistanta(lat1, lon1, lat2, lon2) {
     const R = 6371; 
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -48,59 +63,47 @@ function calculeazaDistanta(lat1, lon1, lat2, lon2) {
     return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
-// Actualizare vizuală a poligoanelor de trafic
 function actualizeazaCuloriTrafic() {
+    if (!map) return;
     trafficLayers.forEach(l => map.removeLayer(l));
     trafficLayers = [];
-    
-    const oraInput = document.getElementById('oraPlecareInput').value;
-    const ora = oraInput ? parseInt(oraInput.split(':')[0]) : new Date().getHours();
+    const oraInput = document.getElementById('oraPlecareInput');
+    const ora = oraInput && oraInput.value ? parseInt(oraInput.value.split(':')[0]) : new Date().getHours();
 
     for (let z in traficZones) {
         const aglomerat = traficZones[z].peakHours.includes(ora);
         const culoare = aglomerat ? "#ff4444" : "#44ff44";
-        const poly = L.polygon(traficZones[z].coords, { 
-            color: culoare, 
-            fillOpacity: 0.4,
-            weight: 2 
-        }).addTo(map);
-        poly.bindTooltip(z + (aglomerat ? " (Trafic Mare)" : " (Trafic Liber)"));
+        const poly = L.polygon(traficZones[z].coords, { color: culoare, fillOpacity: 0.4, weight: 2 }).addTo(map);
         trafficLayers.push(poly);
     }
 }
 
 // ==========================================
-// 3. LOGICĂ RUTARE ȘI CĂUTARE
+// 3. NAVIGARE AUTOMATĂ
 // ==========================================
 
 async function cautaRuta() {
-    if (!map || !userCoords) return alert("Așteaptă localizarea GPS!");
+    if (!map || !userCoords) return;
     
-    const textInput = document.getElementById('destinatie').value.trim();
-    if (!textInput) return;
+    const inputField = document.getElementById('destinatie');
+    const destinatieText = inputField.value.trim();
+    const mod = document.getElementById('modDeplasare').value;
 
     let lat, lon;
 
-    // Prioritate: Punct selectat prin click pe hartă
     if (selectedDestination) {
         lat = selectedDestination.lat;
         lon = selectedDestination.lon;
     } else {
-        // Căutare prin text (Nominatim API)
-        try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(textInput + ", Brasov")}`);
-            const data = await res.json();
-            if (data.length === 0) return alert("Locație negăsită în Brașov!");
-            lat = parseFloat(data[0].lat);
-            lon = parseFloat(data[0].lon);
-        } catch (e) {
-            console.error("Eroare la căutare:", e);
-            return;
-        }
+        if (!destinatieText) return;
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destinatieText + ", Brasov")}`);
+        const data = await res.json();
+        if (data.length === 0) return;
+        lat = parseFloat(data[0].lat);
+        lon = parseFloat(data[0].lon);
     }
 
     const apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjVlNTNhMjUxYWE2ODQ0ZTdhY2JiNzhjMTI1ZGVmZWFhIiwiaCI6Im11cm11cjY0In0=";
-    const mod = document.getElementById('modDeplasare').value;
     const url = `https://api.openrouteservice.org/v2/directions/${mod}?api_key=${apiKey}&start=${userCoords[1]},${userCoords[0]}&end=${lon},${lat}`;
 
     try {
@@ -112,98 +115,75 @@ async function cautaRuta() {
             if (destinationMarker) map.removeLayer(destinationMarker);
 
             const coords = routeData.features[0].geometry.coordinates.map(c => [c[1], c[0]]);
-            routeLayer = L.polyline(coords, { color: '#0066ff', weight: 5 }).addTo(map);
-            destinationMarker = L.marker([lat, lon]).addTo(map).bindPopup(textInput).openPopup();
+            routeLayer = L.polyline(coords, { color: '#0066ff', weight: 6 }).addTo(map);
+            
+            destinationMarker = L.marker([lat, lon]).addTo(map);
             map.fitBounds(routeLayer.getBounds());
 
-            // Verificare zonă risc la destinație
             let alertaHtml = "";
-            zoneRisc.forEach(z => {
-                if (calculeazaDistanta(lat, lon, z.lat, z.lon) <= z.raza) {
-                    alertaHtml = `<div class="warning-box" style="background:#ffcc00; color:black; padding:10px; border-radius:8px; margin-top:10px; font-weight:bold; border-left:5px solid #cc3300;">
-                                    ⚠️ Atenție: Zona de risc ${z.nume}! Ai grijă la bunuri.
-                                  </div>`;
+            for (let zona of zoneRisc) {
+                if (calculeazaDistanta(lat, lon, zona.lat, zona.lon) <= zona.raza) {
+                    alertaHtml = `<div class="warning-box">⚠️ Atenție: Zonă risc ${zona.nume}!</div>`;
+                    break;
                 }
-            });
+            }
 
-            document.getElementById('route-details-card').style.display = 'block';
-            document.getElementById('card-content').innerHTML = `
-                <b>Timp estimat:</b> ${Math.round(routeData.features[0].properties.summary.duration / 60)} min<br>
-                <b>Distanță:</b> ${(routeData.features[0].properties.summary.distance / 1000).toFixed(1)} km
-                ${alertaHtml}
-            `;
+            const card = document.getElementById('route-details-card');
+            if (card) {
+                card.style.display = 'block';
+                document.getElementById('card-content').innerHTML = `
+                    <b>Timp:</b> ${Math.round(routeData.features[0].properties.summary.duration / 60)} min<br>
+                    <b>Dist:</b> ${(routeData.features[0].properties.summary.distance / 1000).toFixed(1)} km
+                    ${alertaHtml}
+                `;
+            }
         }
-    } catch (e) {
-        console.error("Eroare la calcularea rutei:", e);
-    }
+    } catch (e) { console.log(e); }
 }
 
 // ==========================================
-// 4. INIȚIALIZARE HARTĂ
+// 4. INIȚIALIZARE
 // ==========================================
 
 function initMap() {
-    map = L.map('map', { zoomSnap: 0.1 }).setView([45.6579, 25.6012], 13);
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
+    map = L.map('map').setView([45.6579, 25.6012], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    // Desenare permanentă cercuri risc
     zoneRisc.forEach(z => {
-        L.circle([z.lat, z.lon], { 
-            color: 'orange', 
-            weight: 2, 
-            dashArray: '5, 10', 
-            fillOpacity: 0.1, 
-            radius: z.raza * 1000 
-        }).addTo(map).bindTooltip("Zonă risc: " + z.nume);
+        L.circle([z.lat, z.lon], { color: 'orange', weight: 2, dashArray: '5, 10', fillOpacity: 0.1, radius: z.raza * 1000 }).addTo(map);
     });
 
-    // Geolocație utilizator
-    if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(pos => {
-            userCoords = [pos.coords.latitude, pos.coords.longitude];
-            if (!userMarker) {
-                userMarker = L.marker(userCoords, { 
-                    icon: L.divIcon({ className: 'user-location-icon', iconSize: [16, 16] }) 
-                }).addTo(map).bindPopup("Ești aici!");
-            } else {
-                userMarker.setLatLng(userCoords);
-            }
-        });
-    }
+    navigator.geolocation.watchPosition(pos => {
+        userCoords = [pos.coords.latitude, pos.coords.longitude];
+        if (!userMarker) {
+            userMarker = L.marker(userCoords, { icon: L.divIcon({className: 'user-location-icon', iconSize: [12, 12]}) }).addTo(map);
+        } else {
+            userMarker.setLatLng(userCoords);
+        }
+    }, (err) => {}, { enableHighAccuracy: true });
 
-    // Click pe hartă pentru a alege destinația
-    map.on('click', e => {
+    map.on('click', async (e) => {
         const { lat, lng } = e.latlng;
         selectedDestination = { lat, lon: lng };
         document.getElementById('destinatie').value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-        
-        if (selectedPointMarker) map.removeLayer(selectedPointMarker);
-        selectedPointMarker = L.marker([lat, lng]).addTo(map).bindPopup("Destinație setată").openPopup();
+        await cautaRuta();
     });
 
+    seteazaOraActuala();
     actualizeazaCuloriTrafic();
+    
+    // Închidere automată mesaj bun venit după 8 secunde
+    setTimeout(closeWelcome, 8000);
 }
 
-// Mesaj de bun venit
-function closeWelcome() {
-    const el = document.getElementById('welcome-message');
-    if (el) el.style.display = 'none';
-}
-
-// Evenimente DOM
 document.addEventListener('DOMContentLoaded', () => {
     initMap();
-
-    // Căutare la buton
+    
     document.getElementById('btn-search').addEventListener('click', () => {
-        selectedDestination = null; // Resetăm selecția manuală pentru a folosi textul
+        selectedDestination = null; 
         cautaRuta();
     });
 
-    // Căutare la tasta Enter
     document.getElementById('destinatie').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             selectedDestination = null;
@@ -211,8 +191,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Schimbare oră -> update trafic
     document.getElementById('oraPlecareInput').addEventListener('change', actualizeazaCuloriTrafic);
-    
-    setTimeout(closeWelcome, 6000);
 });

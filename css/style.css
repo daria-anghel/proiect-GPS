@@ -794,7 +794,6 @@ button:hover {
 @keyframes pulseWarning { 0% { box-shadow: 0 0 0px #ffcc00; } 50% { box-shadow: 0 0 10px #ff3300; } 100% { box-shadow: 0 0 0px #ffcc00; } }
 .fade-out { opacity: 0; transition: 0.5s; }
 
-/* Butonul de risc */
 .btn-risk {
     background-color: #444 !important;
     color: white !important;
@@ -808,4 +807,18 @@ button:hover {
     border: 1px solid #cc3300 !important;
     box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
     font-weight: bold;
+}
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+.warning-box {
+    background: #ffcc00;
+    color: black;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-weight: bold;
+    border: 2px solid black;
 }
