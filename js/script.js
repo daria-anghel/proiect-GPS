@@ -8,6 +8,9 @@ let userCoords;
 let destinationMarker;
 let geoWatchId = null;
 let trafficLayers = [];
+let selectedPointMarker = null;
+let selectedPointCoords = null;
+let selectedPointAddress = null;
 
 // Cheia API pentru rute (OpenRouteService)
 const API_KEY = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjVlNTNhMjUxYWE2ODQ0ZTdhY2JiNzhjMTI1ZGVmZWFhIiwiaCI6Im11cm11cjY0In0=";
@@ -151,32 +154,124 @@ function initMap() {
     actualizeazaCuloriTrafic();
 
     // 3. Click pe hartă -> Reverse Geocoding (Găsește adresa)
-    map.on('click', async function (e) {
+    map.on('click', async (e) => {
         const { lat, lng } = e.latlng;
 
-        L.popup().setLatLng(e.latlng).setContent("Caut adresa...").openOn(map);
+        // Curățăm selecția anterioară (ca să nu rămână markere pierdute)
+        if (selectedPointMarker) {
+            map.removeLayer(selectedPointMarker);
+            selectedPointMarker = null;
+        }
 
+        selectedPointCoords = [lat, lng];
+        selectedPointAddress = null;
+
+        // Marker imediat (feedback vizual)
+        selectedPointMarker = L.marker(selectedPointCoords).addTo(map);
+
+        // Popup compact
+        const popupHtml = `
+        <div style="text-align:left; min-width:180px;">
+            <div style="font-weight:700; margin-bottom:8px;">Destinație găsită</div>
+            <div id="map-pick-status" style="font-size:12px; color:#666; margin-bottom:10px;">
+                Caut adresa...
+            </div>
+            <button id="btn-directions-from-map" style="
+                width:100%;
+                padding:8px 10px;
+                border:none;
+                border-radius:8px;
+                cursor:pointer;
+                font-weight:700;
+                background:#0066ff;
+                color:white;
+            " disabled>Direcții</button>
+        </div>
+    `;
+
+        selectedPointMarker.bindPopup(popupHtml, { closeButton: true, maxWidth: 260 }).openPopup();
+
+        // Dacă utilizatorul închide popup-ul (X), ștergem markerul
+        selectedPointMarker.on('popupclose', () => {
+            if (selectedPointMarker) {
+                map.removeLayer(selectedPointMarker);
+                selectedPointMarker = null;
+            }
+            selectedPointCoords = null;
+            selectedPointAddress = null;
+        });
+
+        // Reverse geocoding (în fundal)
         try {
-            // Întrebăm serverul ce adresă e acolo
             const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
             const response = await fetch(url);
             const data = await response.json();
 
             if (data && data.display_name) {
-                // Scurtăm un pic adresa ca să nu fie kilometrica
-                let adresaScurta = data.display_name.split(',').slice(0, 3).join(',');
-                document.getElementById('destinatie').value = adresaScurta;
-                map.closePopup();
-                cautaRuta(); // Declanșăm căutarea automat
+                // Scurtăm adresa ca să nu fie kilometrica
+                selectedPointAddress = data.display_name.split(',').slice(0, 3).join(',').trim();
             } else {
-                // Fallback dacă nu găsește adresa
-                document.getElementById('destinatie').value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-                map.closePopup();
-                cautaRuta();
+                selectedPointAddress = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
             }
+
+            // Activăm butonul (fără să afișăm adresa completă)
+            setTimeout(() => {
+                const statusEl = document.getElementById('map-pick-status');
+                const btn = document.getElementById('btn-directions-from-map');
+
+                if (statusEl) {
+                    statusEl.textContent = "Adresă identificată.";
+                }
+                if (btn) {
+                    btn.disabled = false;
+                }
+            }, 0);
         } catch (err) {
-            console.error("Eroare la click:", err);
+            console.error("Eroare la reverse geocoding:", err);
+
+            // Permitem direcții și pe coordonate (fallback)
+            selectedPointAddress = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+            setTimeout(() => {
+                const statusEl = document.getElementById('map-pick-status');
+                const btn = document.getElementById('btn-directions-from-map');
+
+                if (statusEl) {
+                    statusEl.textContent = "Nu am putut identifica adresa. Poți continua pe coordonate.";
+                }
+                if (btn) {
+                    btn.disabled = false;
+                }
+            }, 0);
         }
+
+        // Click pe Direcții -> abia acum generăm ruta
+        setTimeout(() => {
+            const btn = document.getElementById('btn-directions-from-map');
+            if (!btn) {
+                return;
+            }
+
+            btn.addEventListener('click', async () => {
+                const input = document.getElementById('destinatie');
+                if (!input) {
+                    return;
+                }
+
+                // Setăm destinația în input (abia după confirmare)
+                input.value = selectedPointAddress || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+                // Ștergem markerul selectat ca să nu rămână 2 markere apropiate
+                if (selectedPointMarker) {
+                    map.removeLayer(selectedPointMarker);
+                    selectedPointMarker = null;
+                }
+                selectedPointCoords = null;
+                selectedPointAddress = null;
+
+                await cautaRuta();
+            }, { once: true });
+        }, 0);
     });
 }
 
