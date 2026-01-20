@@ -115,7 +115,14 @@ async function cautaRuta() {
             if (destinationMarker) map.removeLayer(destinationMarker);
 
             const coords = routeData.features[0].geometry.coordinates.map(c => [c[1], c[0]]);
-            routeLayer = L.polyline(coords, { color: '#0066ff', weight: 6 }).addTo(map);
+
+            // --- LOGICA PENTRU RUTA PUNCTATĂ ---
+            const isWalking = mod === 'foot-walking';
+            routeLayer = L.polyline(coords, { 
+                color: isWalking ? '#009dff' : '#0066ff', // Portocaliu pentru mers, Albastru pentru mașină
+                weight: 6,
+                dashArray: isWalking ? '5, 10' : null // '5, 10' creează efectul de puncte/linii sacadate
+            }).addTo(map);
             
             destinationMarker = L.marker([lat, lon]).addTo(map);
             map.fitBounds(routeLayer.getBounds());
@@ -191,5 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+   // Actualizează ruta când schimbi modul (Mașină/Pieton) ca să se schimbe stilul liniei
+    document.getElementById('modDeplasare').addEventListener('change', cautaRuta);
     document.getElementById('oraPlecareInput').addEventListener('change', actualizeazaCuloriTrafic);
 });
